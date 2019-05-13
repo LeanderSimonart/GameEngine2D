@@ -14,7 +14,7 @@
 # Compiled Dynamic libraries
 *.so
 *.dylib
-*.dll
+
 
 # Fortran module files
 *.mod
@@ -24,7 +24,7 @@
 *.lai
 *.la
 *.a
-*.lib
+
 
 # Executables
 *.exe
@@ -47,8 +47,8 @@ ipch/
 [Dd]ebugPublic/
 [Rr]elease/
 [Rr]eleases/
-x64/
-x86/
+
+
 [Aa][Rr][Mm]/
 [Aa][Rr][Mm]64/
 bld/
