@@ -22,9 +22,8 @@ void dae::RenderComponent::Initialize()
 {
 }
 
-void RenderComponent::Update(float deltaTime)
+void RenderComponent::Update()
 {
-	UNREFERENCED_PARAMETER(deltaTime);
 }
 
 void RenderComponent::Render()

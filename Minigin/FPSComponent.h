@@ -11,7 +11,7 @@ namespace dae
 		~FPSComponent();
 
 		virtual void Initialize();
-		virtual void Update(float deltaTime);
+		virtual void Update();
 		virtual void Render();
 
 	private:

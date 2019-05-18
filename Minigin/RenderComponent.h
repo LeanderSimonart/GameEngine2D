@@ -9,10 +9,10 @@ namespace dae
 	{
 	public:
 		RenderComponent();
-		~RenderComponent();
+		virtual ~RenderComponent();
 
 		virtual void Initialize();
-		virtual void Update(float deltaTime);
+		virtual void Update();
 		virtual void Render();
 
 		void SetTexture(std::shared_ptr<Texture2D> texture);

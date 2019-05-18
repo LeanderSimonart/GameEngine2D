@@ -2,11 +2,11 @@
 #include "SceneManager.h"
 #include "Scene.h"
 
-void dae::SceneManager::Update(float deltaTime)
+void dae::SceneManager::Update()
 {
 	for(auto scene : mScenes)
 	{
-		scene->Update(deltaTime);
+		scene->Update();
 	}
 }
 

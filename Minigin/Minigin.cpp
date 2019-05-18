@@ -14,6 +14,7 @@
 #include "RenderComponent.h"
 #include "FPSComponent.h"
 #include "Font.h"
+#include "Time.h"
 
 void dae::Minigin::Initialize()
 {
@@ -52,46 +53,46 @@ void dae::Minigin::LoadGame() const
 	renderCompBackGround->SetTexture("background.jpg");
 	background->AddComponent(renderCompBackGround);
 	scene.Add(background);
-	/////Logo
-	//auto logo = std::make_shared<GameObject>();
-	//logo->Initialize();
-	//logo->GetTransform()->SetPosition(216, 180);
-	//auto renderCompLogo = new RenderComponent();
-	//renderCompLogo->SetTexture("logo.png");
-	//logo->AddComponent(renderCompLogo);
-	//scene.Add(logo);
-	//
-	//std::shared_ptr<Font> font = ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
-	/////Assignement Title
-	//auto gameObject = std::make_shared<GameObject>();
-	//gameObject->Initialize();
-	//gameObject->GetTransform()->SetPosition(80, 20);
-	//
-	//auto renderComp = new RenderComponent();
-	//gameObject->AddComponent(renderComp);
-	//
-	//auto textComp = new TextComponent();
-	//textComp->Initialize("Programming 4 Assignment", font);
-	//gameObject->AddComponent(textComp);
-	//scene.Add(gameObject);
-	//
-	/////FPS Counter
-	//auto fpsCounter = std::make_shared<GameObject>();
-	//fpsCounter->Initialize();
-	//fpsCounter->GetTransform()->SetPosition(5, 5);
-	//
-	//auto fpsRenderComp = new RenderComponent();
-	//fpsCounter->AddComponent(fpsRenderComp);
-	//
-	//auto fpsTextComp = new TextComponent();
-	//fpsTextComp->Initialize("fps", font);
-	//fpsCounter->AddComponent(fpsTextComp);
-	//
-	//auto FPSComp = new FPSComponent();
-	//fpsCounter->AddComponent(FPSComp);
-	//FPSComp->Initialize();
-	//
-	//scene.Add(fpsCounter);
+	///Logo
+	auto logo = std::make_shared<GameObject>();
+	logo->Initialize();
+	logo->GetTransform()->SetPosition(216, 180);
+	auto renderCompLogo = new RenderComponent();
+	renderCompLogo->SetTexture("logo.png");
+	logo->AddComponent(renderCompLogo);
+	scene.Add(logo);
+	
+	std::shared_ptr<Font> font = ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
+	///Assignement Title
+	auto gameObject = std::make_shared<GameObject>();
+	gameObject->Initialize();
+	gameObject->GetTransform()->SetPosition(80, 20);
+	
+	auto renderComp = new RenderComponent();
+	gameObject->AddComponent(renderComp);
+	
+	auto textComp = new TextComponent();
+	textComp->Initialize("Programming 4 Assignment", font);
+	gameObject->AddComponent(textComp);
+	scene.Add(gameObject);
+	
+	///FPS Counter
+	auto fpsCounter = std::make_shared<GameObject>();
+	fpsCounter->Initialize();
+	fpsCounter->GetTransform()->SetPosition(5, 5);
+	
+	auto fpsRenderComp = new RenderComponent();
+	fpsCounter->AddComponent(fpsRenderComp);
+	
+	auto fpsTextComp = new TextComponent();
+	fpsTextComp->Initialize("fps", font);
+	fpsCounter->AddComponent(fpsTextComp);
+	
+	auto FPSComp = new FPSComponent();
+	fpsCounter->AddComponent(FPSComp);
+	FPSComp->Initialize();
+	
+	scene.Add(fpsCounter);
 }
 
 void dae::Minigin::Cleanup()
@@ -117,6 +118,7 @@ void dae::Minigin::Run()
 		auto& renderer = Renderer::GetInstance();
 		auto& sceneManager = SceneManager::GetInstance();
 		auto& input = InputManager::GetInstance();
+		auto& time = Time::GetInstance();
 
 		bool doContinue = true;
 		while (doContinue)
@@ -126,7 +128,9 @@ void dae::Minigin::Run()
 
 			doContinue = input.ProcessInput();
 
-			sceneManager.Update(deltaTime);
+			time.DeltaTime = deltaTime;
+
+			sceneManager.Update();
 			renderer.Render();
 
 			t += std::chrono::milliseconds(msPerFrame);

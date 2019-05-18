@@ -12,7 +12,7 @@ namespace dae
 		~TextComponent();
 
 		virtual void Initialize(const std::string& text, std::shared_ptr<Font> font);
-		virtual void Update(float deltaTime);
+		virtual void Update();
 		virtual void Render();
 
 		void SetText(const std::string& text);

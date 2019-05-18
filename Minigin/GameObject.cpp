@@ -33,11 +33,11 @@ void GameObject::Initialize()
 	}
 }
 
-void GameObject::Update(float deltaTime)
+void GameObject::Update()
 {
 	for (BaseComponent* pComp : m_pComponents)
 	{
-		pComp->Update(deltaTime);
+		pComp->Update();
 	}
 }
 

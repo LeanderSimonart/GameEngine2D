@@ -16,9 +16,8 @@ void BaseComponent::Initialize()
 {
 }
 
-void BaseComponent::Update(float deltaTime)
+void BaseComponent::Update()
 {
-	UNREFERENCED_PARAMETER(deltaTime);
 }
 
 void BaseComponent::Render()

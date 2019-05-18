@@ -7,10 +7,10 @@ namespace dae
 	{
 	public:
 		BaseComponent();
-		~BaseComponent();
+		virtual ~BaseComponent();
 
 		virtual void Initialize();
-		virtual void Update(float deltaTime);
+		virtual void Update();
 		virtual void Render();
 
 		GameObject* GetGameObject() const { return m_pGameObject; }

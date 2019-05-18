@@ -16,9 +16,8 @@ TextComponent::~TextComponent()
 {
 }
 
-void TextComponent::Update(float deltaTime)
+void TextComponent::Update()
 {
-	UNREFERENCED_PARAMETER(deltaTime);
 	if (mNeedsUpdate)
 	{
 		const SDL_Color color = { 255,255,255 }; // only white text is supported now

@@ -16,7 +16,7 @@ namespace dae
 		~TransformComponent();
 
 		virtual void Initialize();
-		virtual void Update(float deltaTime);
+		virtual void Update();
 		virtual void Render();
 
 		const glm::vec3& GetPosition() const { return mPosition; }

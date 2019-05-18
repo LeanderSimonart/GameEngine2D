@@ -2,6 +2,7 @@
 #include "FPSComponent.h"
 #include "GameObject.h"
 #include "TextComponent.h"
+#include "Time.h"
 
 using namespace dae;
 
@@ -19,9 +20,9 @@ void FPSComponent::Initialize()
 	textComp = GetGameObject()->GetComponent<TextComponent>();
 }
 
-void FPSComponent::Update(float deltaTime)
+void FPSComponent::Update()
 {
-	int fps = (int)(1 / deltaTime);
+	int fps = (int)(1 / Time::GetInstance().DeltaTime);
 	textComp->SetText(std::to_string(fps) + " FPS");
 }
 

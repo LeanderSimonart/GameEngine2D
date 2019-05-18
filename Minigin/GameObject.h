@@ -13,7 +13,7 @@ namespace dae
 	class GameObject final : public SceneObject
 	{
 	public:
-		void Update(float deltaTime) override;
+		void Update() override;
 		void Render() const override;
 		//void SetTexture(const std::string& filename);
 		//void SetPosition(float x, float y);
