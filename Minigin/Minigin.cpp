@@ -15,6 +15,7 @@
 #include "FPSComponent.h"
 #include "Font.h"
 #include "Time.h"
+#include "ServiceLocator.h"
 
 void dae::Minigin::Initialize()
 {
@@ -121,6 +122,9 @@ void dae::Minigin::Run()
 		auto& input = InputManager::GetInstance();
 		input.InitializeControllers();
 		auto& time = Time::GetInstance();
+		
+		auto& audio = ConsoleAudioMuted::GetInstance();
+		ServiceLocator::Provide(&audio);
 
 		bool doContinue = true;
 		while (doContinue)
@@ -134,11 +138,6 @@ void dae::Minigin::Run()
 
 			sceneManager.Update();
 			renderer.Render();
-
-			if (GetKeyState('A') & 0x8000)
-			{
-				doContinue = false;
-			}
 
 			t += std::chrono::milliseconds(msPerFrame);
 			std::this_thread::sleep_until(t);
