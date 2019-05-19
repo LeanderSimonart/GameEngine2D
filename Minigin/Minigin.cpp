@@ -98,6 +98,7 @@ void dae::Minigin::LoadGame() const
 void dae::Minigin::Cleanup()
 {
 	Renderer::GetInstance().Destroy();
+	InputManager::GetInstance().Destroy();
 
 	SDL_DestroyWindow(window);
 	window = nullptr;
@@ -118,6 +119,7 @@ void dae::Minigin::Run()
 		auto& renderer = Renderer::GetInstance();
 		auto& sceneManager = SceneManager::GetInstance();
 		auto& input = InputManager::GetInstance();
+		input.InitializeControllers();
 		auto& time = Time::GetInstance();
 
 		bool doContinue = true;
@@ -132,6 +134,11 @@ void dae::Minigin::Run()
 
 			sceneManager.Update();
 			renderer.Render();
+
+			if (GetKeyState('A') & 0x8000)
+			{
+				doContinue = false;
+			}
 
 			t += std::chrono::milliseconds(msPerFrame);
 			std::this_thread::sleep_until(t);
