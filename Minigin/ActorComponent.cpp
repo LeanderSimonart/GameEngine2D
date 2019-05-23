@@ -254,44 +254,82 @@ void ActorComponent::Right()
 
 void ActorComponent::CheckGrid(float x, float y, int size)
 {
-	UNREFERENCED_PARAMETER(size);
 	auto& level = LevelLoader::GetInstance();
+	std::shared_ptr<GameObject> object;
 
-	auto object = level.CheckGrid(x, y);
-	object->GetComponent<Node>()->EnterNode(x, y);
-
-	object = level.CheckGrid(x + size, y);
-	object->GetComponent<Node>()->EnterNode(x + size, y);
-	
-	object = level.CheckGrid(x, y + size);
-	object->GetComponent<Node>()->EnterNode(x, y + size);
-	
-	object = level.CheckGrid(x + size, y + size);
-	object->GetComponent<Node>()->EnterNode(x + size, y + size);
+	switch (lookAtDirection)
+	{
+	case LOOKINGLEFT:
+		object = level.CheckGrid(x, y);
+		object->GetComponent<Node>()->EnterNode(x, y);
+		break;
+	case LOOKINGRIGHT:
+		object = level.CheckGrid(x + size, y);
+		object->GetComponent<Node>()->EnterNode(x + size, y);
+		break;
+	case LOOKINGUP:
+		object = level.CheckGrid(x, y);
+		object->GetComponent<Node>()->EnterNode(x, y);
+		break;
+	case LOOKINGDOWN:
+		object = level.CheckGrid(x, y + size);
+		object->GetComponent<Node>()->EnterNode(x, y + size);
+		break;
+	}
 }
 
 void ActorComponent::GetTargetPosition(int index)
 {
 	glm::vec3 pos = transformComp->GetPosition();
 	auto& level = LevelLoader::GetInstance();
+	auto currentObject = level.CheckGrid(pos.x, pos.y);
 
-	if (!targetSet)
+	if (!targetSet && currentObject != nullptr)
 	{
-		auto currentObject = level.CheckGrid(pos.x, pos.y);
-		if (currentObject != nullptr)
-		{
-			int currentIndex = level.GetIndex(currentObject);
-			auto targetObject = level.CheckGrid(currentIndex + index);
-
-			if (targetObject != nullptr)
-				targetPos = targetObject->GetTransform()->GetPosition();
-			else targetPos = currentObject->GetTransform()->GetPosition();
-
-			targetPos.x += 22;
-			targetPos.y += 22;
-			
-		}
-
 		targetSet = true;
+		auto currentObjectPos = currentObject->GetTransform()->GetPosition();
+		currentObjectPos.x += 22;
+		currentObjectPos.y += 22;
+
+		switch (lookAtDirection)
+		{
+		case LOOKINGLEFT:
+			if (pos.x >= currentObjectPos.x)
+			{
+				targetPos = currentObjectPos;
+				return;
+			}				
+			break;
+		case LOOKINGRIGHT:
+			if (pos.x <= currentObjectPos.x)
+			{
+				targetPos = currentObjectPos;
+				return;
+			}
+			break;
+		case LOOKINGUP:
+			if (pos.y >= currentObjectPos.y)
+			{
+				targetPos = currentObjectPos;
+				return;
+			}
+			break;
+		case LOOKINGDOWN:
+			if (pos.y <= currentObjectPos.y)
+			{
+				targetPos = currentObjectPos;
+				return;
+			}
+			break;
+		}
+		
+		int currentIndex = level.GetIndex(currentObject);
+		auto targetObject = level.CheckGrid(currentIndex + index);
+
+		if (targetObject != nullptr)
+			targetPos = targetObject->GetTransform()->GetPosition();
+
+		targetPos.x += 22;
+		targetPos.y += 22;
 	}
 }
