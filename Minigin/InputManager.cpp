@@ -3,10 +3,10 @@
 #include <SDL.h>
 
 #include "Command.h"
-#include "FireCommand.h"
-#include "JumpCommand.h"
-#include "DuckCommand.h"
-#include "FartCommand.h"
+#include "UpCommand.h"
+#include "DownCommand.h"
+#include "RightCommand.h"
+#include "LeftCommand.h"
 
 bool dae::InputManager::ProcessInput()
 {
@@ -47,18 +47,37 @@ void dae::InputManager::InitializeControllers()
 	m_IsInitialized = true;
 }
 
-bool dae::InputManager::IsPressed(ControllerButton button) const
+Command* dae::InputManager::IsPressed(ControllerButton button) const
 {
 	// todo: return whether the given button is pressed or not.
 	if (m_PreviousControllerStates[0].Gamepad.wButtons & Controller_Buttons[(int)button])
 	{
 		Command* command = CheckButtonId(button);
 		if (command != nullptr)
-			command->Execute();
-		return true;
+			return command;
 	}
 
 	return false;
+}
+
+Command * dae::InputManager::HandleInput() const
+{
+	Command* command = nullptr;
+
+	command = IsPressed(dae::ControllerButton::ButtonA);
+	if (command != nullptr) return command;
+
+	command = IsPressed(dae::ControllerButton::ButtonB);
+	if (command != nullptr) return command;
+
+	command = IsPressed(dae::ControllerButton::ButtonX);
+	if (command != nullptr) return command;
+
+	command = IsPressed(dae::ControllerButton::ButtonY);
+	if (command != nullptr) return command;
+
+
+	return nullptr;
 }
 
 Command* dae::InputManager::CheckButtonId(ControllerButton button) const
@@ -73,10 +92,10 @@ Command* dae::InputManager::CheckButtonId(ControllerButton button) const
 
 void dae::InputManager::InitializeCommands()
 {
-	m_ButtonA = new FireCommand();
-	m_ButtonB = new DuckCommand();
-	m_ButtonX = new JumpCommand();
-	m_ButtonY = new FartCommand();
+	m_ButtonA = new DownCommand();
+	m_ButtonB = new RightCommand();
+	m_ButtonX = new LeftCommand();
+	m_ButtonY = new UpCommand();
 	
 	m_ButtonA->ButtonID = 0;
 	m_ButtonB->ButtonID = 1;

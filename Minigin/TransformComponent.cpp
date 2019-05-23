@@ -1,5 +1,7 @@
 #include "MiniginPCH.h"
 #include "TransformComponent.h"
+#include "GameObject.h"
+#include "RenderComponent.h"
 
 using namespace dae;
 
@@ -30,4 +32,8 @@ void TransformComponent::SetPosition(const float x, const float y)
 	mPosition.x = x;
 	mPosition.y = y;
 	mPosition.z = 0.0f;
+
+	auto renderComp = GetGameObject()->GetComponent<RenderComponent>();
+	if (renderComp != nullptr)
+		renderComp->SetTexturePosition(mPosition.x, mPosition.y);
 }

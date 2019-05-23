@@ -16,6 +16,8 @@
 #include "Font.h"
 #include "Time.h"
 #include "ServiceLocator.h"
+#include "LevelLoader.h"
+#include "ActorComponent.h"
 
 void dae::Minigin::Initialize()
 {
@@ -28,8 +30,8 @@ void dae::Minigin::Initialize()
 		"Programming 4 assignment",
 		SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOWPOS_UNDEFINED,
-		640,
-		480,
+		630, //640
+		810, //480
 		SDL_WINDOW_OPENGL
 	);
 	if (window == nullptr) 
@@ -47,53 +49,69 @@ void dae::Minigin::LoadGame() const
 {
 	auto &scene = SceneManager::GetInstance().CreateScene("Demo");
 
-	///Background
-	auto background = std::make_shared<GameObject>();
-	background->Initialize();
-	auto renderCompBackGround = new RenderComponent();
-	renderCompBackGround->SetTexture("background.jpg");
-	background->AddComponent(renderCompBackGround);
-	scene.Add(background);
-	///Logo
-	auto logo = std::make_shared<GameObject>();
-	logo->Initialize();
-	logo->GetTransform()->SetPosition(216, 180);
-	auto renderCompLogo = new RenderComponent();
-	renderCompLogo->SetTexture("logo.png");
-	logo->AddComponent(renderCompLogo);
-	scene.Add(logo);
-	
-	std::shared_ptr<Font> font = ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
-	///Assignement Title
-	auto gameObject = std::make_shared<GameObject>();
-	gameObject->Initialize();
-	gameObject->GetTransform()->SetPosition(80, 20);
-	
+	auto& levelLoader = LevelLoader::GetInstance();
+	levelLoader.Load(14, 18, scene);
+
+	auto testChar = std::make_shared<GameObject>();
+	testChar->Initialize();
 	auto renderComp = new RenderComponent();
-	gameObject->AddComponent(renderComp);
-	
-	auto textComp = new TextComponent();
-	textComp->Initialize("Programming 4 Assignment", font);
-	gameObject->AddComponent(textComp);
-	scene.Add(gameObject);
-	
-	///FPS Counter
-	auto fpsCounter = std::make_shared<GameObject>();
-	fpsCounter->Initialize();
-	fpsCounter->GetTransform()->SetPosition(5, 5);
-	
-	auto fpsRenderComp = new RenderComponent();
-	fpsCounter->AddComponent(fpsRenderComp);
-	
-	auto fpsTextComp = new TextComponent();
-	fpsTextComp->Initialize("fps", font);
-	fpsCounter->AddComponent(fpsTextComp);
-	
-	auto FPSComp = new FPSComponent();
-	fpsCounter->AddComponent(FPSComp);
-	FPSComp->Initialize();
-	
-	scene.Add(fpsCounter);
+	testChar->AddComponent(renderComp);
+	auto actorComp = new ActorComponent();
+	testChar->AddComponent(actorComp);
+	actorComp->Initialize();
+	scene.Add(testChar);
+
+	auto pos = levelLoader.CheckGrid(0)->GetTransform()->GetPosition();
+	pos.x += 22;
+	pos.y += 22;
+	testChar->GetTransform()->SetPosition(pos.x, pos.y);
+	///Background
+	//auto background = std::make_shared<GameObject>();
+	//background->Initialize();
+	//auto renderCompBackGround = new RenderComponent();
+	//renderCompBackGround->SetTexture("background.jpg");
+	//background->AddComponent(renderCompBackGround);
+	//scene.Add(background);
+	/////Logo
+	//auto logo = std::make_shared<GameObject>();
+	//logo->Initialize();
+	//logo->GetTransform()->SetPosition(216, 180);
+	//auto renderCompLogo = new RenderComponent();
+	//renderCompLogo->SetTexture("logo.png");
+	//logo->AddComponent(renderCompLogo);
+	//scene.Add(logo);
+	//
+	//std::shared_ptr<Font> font = ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
+	/////Assignement Title
+	//auto gameObject = std::make_shared<GameObject>();
+	//gameObject->Initialize();
+	//gameObject->GetTransform()->SetPosition(80, 20);
+	//
+	//auto renderComp = new RenderComponent();
+	//gameObject->AddComponent(renderComp);
+	//
+	//auto textComp = new TextComponent();
+	//textComp->Initialize("Programming 4 Assignment", font);
+	//gameObject->AddComponent(textComp);
+	//scene.Add(gameObject);
+	//
+	/////FPS Counter
+	//auto fpsCounter = std::make_shared<GameObject>();
+	//fpsCounter->Initialize();
+	//fpsCounter->GetTransform()->SetPosition(5, 5);
+	//
+	//auto fpsRenderComp = new RenderComponent();
+	//fpsCounter->AddComponent(fpsRenderComp);
+	//
+	//auto fpsTextComp = new TextComponent();
+	//fpsTextComp->Initialize("fps", font);
+	//fpsCounter->AddComponent(fpsTextComp);
+	//
+	//auto FPSComp = new FPSComponent();
+	//fpsCounter->AddComponent(FPSComp);
+	//FPSComp->Initialize();
+	//
+	//scene.Add(fpsCounter);
 }
 
 void dae::Minigin::Cleanup()

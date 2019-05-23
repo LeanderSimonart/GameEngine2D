@@ -36,7 +36,8 @@ namespace dae
 	{
 	public:
 		bool ProcessInput();
-		bool IsPressed(ControllerButton button) const;
+		Command* IsPressed(ControllerButton button) const;
+		Command* HandleInput() const;
 		void InitializeControllers();
 		void InitializeCommands();
 
