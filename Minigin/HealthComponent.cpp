@@ -26,6 +26,11 @@ void HealthComponent::UpdateLives(int amount)
 	if (mCurrentLives <= 0) Death();
 }
 
+std::string dae::HealthComponent::ReturnDisplayText()
+{
+	return "Lives: " + std::to_string(ReturnCurrentLives());
+}
+
 void dae::HealthComponent::Death()
 {
 }

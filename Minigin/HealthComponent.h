@@ -20,6 +20,8 @@ namespace dae
 		int ReturnCurrentLives() { return mCurrentLives; }
 		int ReturnMaxLives() { return mMaxLives; }
 		bool ReturnUsingDisplay() { return mDisplay; }
+
+		std::string ReturnDisplayText();
 	private:
 		void Death();
 

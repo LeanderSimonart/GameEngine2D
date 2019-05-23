@@ -129,7 +129,10 @@
     <ClInclude Include="HealthComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="HealthDisplay.h">
+    <ClInclude Include="Display.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PointComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -233,7 +236,10 @@
     <ClCompile Include="HealthComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="HealthDisplay.cpp">
+    <ClCompile Include="Display.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PointComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

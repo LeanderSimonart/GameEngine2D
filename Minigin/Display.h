@@ -5,28 +5,31 @@ namespace dae
 	class RenderComponent;
 	class HealthComponent;
 	class TextComponent;
+	class PointComponent;
 	class GameObject;
 
-	class HealthDisplay : public BaseComponent
+	class Display : public BaseComponent
 	{
 	public:
-		HealthDisplay(float xPos, float yPos, std::shared_ptr<GameObject> linkedObject) : xPosition(xPos), yPosition(yPos), mLinkedObject(linkedObject) {}
-		~HealthDisplay();
+		Display(float xPos, float yPos, std::shared_ptr<GameObject> linkedObject, bool isHealth) : xPosition(xPos), yPosition(yPos), mLinkedObject(linkedObject), mIsHealth(isHealth) {}
+		~Display();
 
 		virtual void Initialize();
 		virtual void Update();
 		virtual void Render();
 
 	private:
-		int mHealth = 0;
 		float xPosition = 0;
 		float yPosition = 0;
 
 		RenderComponent* mRenderComp = nullptr;
 		HealthComponent* mHealthComp = nullptr;
 		TextComponent* mTextComp = nullptr;
+		PointComponent* mPointComp = nullptr;
 
 		std::weak_ptr<GameObject> mLinkedObject;
+
+		bool mIsHealth = false;
 	};
 }
 

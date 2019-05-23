@@ -18,8 +18,9 @@
 #include "ServiceLocator.h"
 #include "LevelLoader.h"
 #include "ActorComponent.h"
-#include "HealthDisplay.h"
+#include "Display.h"
 #include "HealthComponent.h"
+#include "PointComponent.h"
 
 void dae::Minigin::Initialize()
 {
@@ -66,9 +67,8 @@ void dae::Minigin::LoadGame() const
 	scene.Add(testChar);
 
 	auto lives = std::make_shared<GameObject>();
-	lives->Initialize();
-	
-	auto healthDisplay = new HealthDisplay(10, 785, testChar);
+	lives->Initialize();	
+	auto healthDisplay = new Display(10, 785, testChar,true);
 	lives->AddComponent(healthDisplay);
 	healthDisplay->Initialize();
 
@@ -79,6 +79,17 @@ void dae::Minigin::LoadGame() const
 	pos.x += 22;
 	pos.y += 22;
 	testChar->GetTransform()->SetPosition(pos.x, pos.y);
+
+
+
+	auto points = std::make_shared<GameObject>();
+	points->Initialize();
+	auto pointComp = new PointComponent();
+	points->AddComponent(pointComp);
+	auto pointDisplay = new Display(550, 10, points,false);
+	points->AddComponent(pointDisplay);
+	pointDisplay->Initialize();
+	scene.Add(points);
 	///Background
 	//auto background = std::make_shared<GameObject>();
 	//background->Initialize();
