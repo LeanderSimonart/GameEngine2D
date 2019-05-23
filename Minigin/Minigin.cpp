@@ -18,6 +18,8 @@
 #include "ServiceLocator.h"
 #include "LevelLoader.h"
 #include "ActorComponent.h"
+#include "HealthDisplay.h"
+#include "HealthComponent.h"
 
 void dae::Minigin::Initialize()
 {
@@ -59,7 +61,19 @@ void dae::Minigin::LoadGame() const
 	auto actorComp = new ActorComponent();
 	testChar->AddComponent(actorComp);
 	actorComp->Initialize();
+	auto healthComp = new HealthComponent(5);
+	testChar->AddComponent(healthComp);
 	scene.Add(testChar);
+
+	auto lives = std::make_shared<GameObject>();
+	lives->Initialize();
+	
+	auto healthDisplay = new HealthDisplay(10, 785, testChar);
+	lives->AddComponent(healthDisplay);
+	healthDisplay->Initialize();
+
+	scene.Add(lives);
+	
 
 	auto pos = levelLoader.CheckGrid(0)->GetTransform()->GetPosition();
 	pos.x += 22;
@@ -81,7 +95,7 @@ void dae::Minigin::LoadGame() const
 	//logo->AddComponent(renderCompLogo);
 	//scene.Add(logo);
 	//
-	//std::shared_ptr<Font> font = ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
+
 	/////Assignement Title
 	//auto gameObject = std::make_shared<GameObject>();
 	//gameObject->Initialize();
@@ -95,23 +109,24 @@ void dae::Minigin::LoadGame() const
 	//gameObject->AddComponent(textComp);
 	//scene.Add(gameObject);
 	//
-	/////FPS Counter
-	//auto fpsCounter = std::make_shared<GameObject>();
-	//fpsCounter->Initialize();
-	//fpsCounter->GetTransform()->SetPosition(5, 5);
-	//
-	//auto fpsRenderComp = new RenderComponent();
-	//fpsCounter->AddComponent(fpsRenderComp);
-	//
-	//auto fpsTextComp = new TextComponent();
-	//fpsTextComp->Initialize("fps", font);
-	//fpsCounter->AddComponent(fpsTextComp);
-	//
-	//auto FPSComp = new FPSComponent();
-	//fpsCounter->AddComponent(FPSComp);
-	//FPSComp->Initialize();
-	//
-	//scene.Add(fpsCounter);
+	///FPS Counter
+	std::shared_ptr<Font> font = ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
+	auto fpsCounter = std::make_shared<GameObject>();
+	fpsCounter->Initialize();
+	fpsCounter->GetTransform()->SetPosition(5, 5);
+	
+	auto fpsRenderComp = new RenderComponent();
+	fpsCounter->AddComponent(fpsRenderComp);
+	
+	auto fpsTextComp = new TextComponent();
+	fpsTextComp->Initialize("fps", font);
+	fpsCounter->AddComponent(fpsTextComp);
+	
+	auto FPSComp = new FPSComponent();
+	fpsCounter->AddComponent(FPSComp);
+	FPSComp->Initialize();
+	
+	scene.Add(fpsCounter);
 }
 
 void dae::Minigin::Cleanup()
