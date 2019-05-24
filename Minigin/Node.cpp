@@ -240,3 +240,22 @@ void Node::SideEntered(NodeSides side)
 
 	CheckSideTextures();
 }
+
+void dae::Node::SetNodeAsDug()
+{
+	rightRenderComp->SetTexture("BlackTile.jpg");
+	leftRenderComp->SetTexture("BlackTile.jpg");
+	topRenderComp->SetTexture("BlackTile.jpg");
+	bottomRenderComp->SetTexture("BlackTile.jpg");
+	centerRenderComp->SetTexture("BlackTile.jpg");
+
+	TopEntered = true;
+	CenterEntered = true;
+	LeftEntered = true;
+	BottomEntered = true;
+	RightEntered = true;
+
+	Dug = true;
+
+	CheckSideTextures();
+}

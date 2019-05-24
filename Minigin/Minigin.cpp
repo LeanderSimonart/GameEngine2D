@@ -54,34 +54,7 @@ void dae::Minigin::LoadGame() const
 	auto &scene = SceneManager::GetInstance().CreateScene("Demo");
 
 	auto& levelLoader = LevelLoader::GetInstance();
-	levelLoader.Load(14, 18, scene);
-
-	auto testChar = std::make_shared<GameObject>();
-	testChar->Initialize();
-	auto renderComp = new RenderComponent();
-	testChar->AddComponent(renderComp);
-	auto actorComp = new ActorComponent(Type::DIGDUG);
-	testChar->AddComponent(actorComp);
-	actorComp->Initialize();
-	auto healthComp = new HealthComponent(5);
-	testChar->AddComponent(healthComp);
-	scene.Add(testChar);
-
-	auto lives = std::make_shared<GameObject>();
-	lives->Initialize();	
-	auto healthDisplay = new Display(10, 785, testChar,true);
-	lives->AddComponent(healthDisplay);
-	healthDisplay->Initialize();
-
-	scene.Add(lives);
-	
-
-	auto pos = levelLoader.CheckGrid(0)->GetTransform()->GetPosition();
-	pos.x += 22;
-	pos.y += 22;
-	testChar->GetTransform()->SetPosition(pos.x, pos.y);
-
-
+	levelLoader.Load("../Data/Level1.txt", scene);
 
 	auto points = std::make_shared<GameObject>();
 	points->Initialize();
@@ -92,20 +65,6 @@ void dae::Minigin::LoadGame() const
 	pointDisplay->Initialize();
 	scene.Add(points);
 
-	////
-	auto rock = std::make_shared<GameObject>();
-	auto rockRenderComp = new RenderComponent();
-	rock->AddComponent(rockRenderComp);
-	rock->Initialize();
-
-	rock->GetTransform()->SetPosition(157-8, 22-8);
-
-	rockRenderComp->SetTexture("WhiteTile.jpg");
-	auto rockComp = new RockComponent(154, 22, scene);
-	rock->AddComponent(rockComp);
-	rockComp->Initialize();
-
-	scene.Add(rock);
 	///Background
 	//auto background = std::make_shared<GameObject>();
 	//background->Initialize();

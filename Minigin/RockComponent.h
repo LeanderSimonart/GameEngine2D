@@ -11,7 +11,7 @@ namespace dae
 	class RockComponent : public BaseComponent
 	{
 	public:
-		RockComponent(float xPos, float yPos, Scene& scene) : xPosition(xPos), yPosition(yPos), mScene(&scene) {}
+		RockComponent(Scene& scene) : mScene(&scene) {}
 		~RockComponent();
 
 		virtual void Initialize();

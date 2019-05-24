@@ -31,6 +31,7 @@ namespace dae
 		bool CheckForActor(ActorComponent* actorComp);
 		void ModifyActorVec(ActorComponent* actorComp, bool add);
 		void SideEntered(NodeSides side);
+		void SetNodeAsDug();
 
 		std::vector<ActorComponent*> ReturnCurrentActors() { return actorCompVec; }
 
