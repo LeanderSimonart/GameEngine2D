@@ -5,6 +5,7 @@ namespace dae
 {
 	class RenderComponent;
 	class TransformComponent;
+	class ActorComponent;
 
 	enum NodeSides
 	{		
@@ -25,11 +26,19 @@ namespace dae
 		virtual void Update();
 		virtual void Render();
 
-		void EnterNode(float x, float y);
+		void EnterNode(float x, float y, ActorComponent* actor);
+		void LeaveNode(ActorComponent* actor) { ModifyActorVec(actor, false); }
+		bool CheckForActor(ActorComponent* actorComp);
+		void ModifyActorVec(ActorComponent* actorComp, bool add);
+		void SideEntered(NodeSides side);
 
+		std::vector<ActorComponent*> ReturnCurrentActors() { return actorCompVec; }
+
+		bool Dug = false;
 	private:
 		void SetTextures();
 		void InitializeRenderComponents();
+		void CheckSideTextures();
 
 		float PositionX = 0;
 		float PositionY = 0;
@@ -37,7 +46,7 @@ namespace dae
 		int Level = 0;
 		int SizeSides = 5;
 
-		bool Dug = false;
+		
 
 		bool LeftEntered = false;
 		bool RightEntered = false;
@@ -52,5 +61,7 @@ namespace dae
 		RenderComponent* centerRenderComp = nullptr;
 
 		TransformComponent* transformComp = nullptr;
+
+		std::vector<ActorComponent*> actorCompVec;
 	};
 }

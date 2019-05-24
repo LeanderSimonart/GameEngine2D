@@ -21,6 +21,7 @@ namespace dae
 		//Add and set component
 		void AddComponent(BaseComponent* comp);
 		void RemoveComponent(BaseComponent* comp);
+		void RemoveAllComponents();
 
 		TransformComponent* GetTransform() const { return m_pTransform; }
 

@@ -5,15 +5,11 @@
 #include "RenderComponent.h"
 #include "GameObject.h"
 #include "LevelLoader.h"
+#include "Node.h"
 
 #include <iostream>
 
 using namespace dae;
-
-ActorComponent::ActorComponent()
-{
-}
-
 
 ActorComponent::~ActorComponent()
 {
@@ -21,11 +17,17 @@ ActorComponent::~ActorComponent()
 
 void ActorComponent::Initialize()
 {
+	auto& level = LevelLoader::GetInstance();
+
 	renderComp = GetGameObject()->GetComponent<RenderComponent>();
 	transformComp = GetGameObject()->GetTransform();
 	transformComp->SetPosition(0.0f, 0.0f);
 	renderComp->SetOffset(-7.5f, -7.5f);
 	renderComp->SetTexture("WhiteTile.jpg");
+
+	auto pos = transformComp->GetPosition();
+	currentNode = level.CheckGrid(pos.x, pos.y)->GetComponent<Node>();
+	currentNode->EnterNode(pos.x, pos.y,this);
 }
 
 void ActorComponent::Update()
@@ -229,7 +231,7 @@ void ActorComponent::Right()
 		}
 		else if (pos.y == targetPos.y)
 		{
-			lookAtDirection = Direction::LOOKINGLEFT;
+			lookAtDirection = Direction::LOOKINGRIGHT;
 			targetSet = false;
 		}
 		break;
@@ -242,7 +244,7 @@ void ActorComponent::Right()
 		}
 		else if (pos.y == targetPos.y)
 		{
-			lookAtDirection = Direction::LOOKINGLEFT;
+			lookAtDirection = Direction::LOOKINGRIGHT;
 			targetSet = false;
 		}
 		break;
@@ -256,24 +258,36 @@ void ActorComponent::CheckGrid(float x, float y, int size)
 {
 	auto& level = LevelLoader::GetInstance();
 	std::shared_ptr<GameObject> object;
+	Node* node = nullptr;
 
 	switch (lookAtDirection)
 	{
 	case LOOKINGLEFT:
-		object = level.CheckGrid(x, y);
-		object->GetComponent<Node>()->EnterNode(x, y);
+		
+		node = level.CheckGrid(x, y)->GetComponent<Node>();
+		//if (node != currentNode)
+		//{
+			currentNode->LeaveNode(this);
+			
+			currentNode = node;
+			currentNode->EnterNode(x, y, this);
+	//	}
+		
 		break;
 	case LOOKINGRIGHT:
-		object = level.CheckGrid(x + size, y);
-		object->GetComponent<Node>()->EnterNode(x + size, y);
+		currentNode->LeaveNode(this);
+		currentNode = level.CheckGrid(x + size, y)->GetComponent<Node>();
+		currentNode->EnterNode(x + size, y, this);
 		break;
 	case LOOKINGUP:
-		object = level.CheckGrid(x, y);
-		object->GetComponent<Node>()->EnterNode(x, y);
+		currentNode->LeaveNode(this);
+		currentNode = level.CheckGrid(x, y)->GetComponent<Node>();
+		currentNode->EnterNode(x, y, this);
 		break;
 	case LOOKINGDOWN:
-		object = level.CheckGrid(x, y + size);
-		object->GetComponent<Node>()->EnterNode(x, y + size);
+		currentNode->LeaveNode(this);
+		currentNode = level.CheckGrid(x, y + size)->GetComponent<Node>();
+		currentNode->EnterNode(x, y + size, this);
 		break;
 	}
 }

@@ -58,6 +58,41 @@ void Node::InitializeRenderComponents()
 	GetGameObject()->AddComponent(centerRenderComp);
 }
 
+void Node::CheckSideTextures()
+{
+	if (LeftEntered)
+	{
+		leftRenderComp->SetTextureTransform(PositionX, PositionY + SizeSides, 5, 35);
+	}
+
+	if (LeftEntered && TopEntered)
+	{
+		leftRenderComp->SetTextureTransform(PositionX, PositionY, 5, 40);
+	}
+
+	if (LeftEntered && BottomEntered)
+	{
+		if (TopEntered)	leftRenderComp->SetTextureDimension(5, 45);
+		else leftRenderComp->SetTextureTransform(PositionX, PositionY + SizeSides, 5, 40);
+	}
+
+	if (RightEntered)
+	{
+		rightRenderComp->SetTextureTransform(PositionX + Size - SizeSides, PositionY + SizeSides, 5, 35);
+	}
+
+	if (RightEntered && TopEntered)
+	{
+		rightRenderComp->SetTextureTransform(PositionX + Size - SizeSides, PositionY, 5, 40);
+	}
+
+	if (RightEntered && BottomEntered)
+	{
+		if (TopEntered)	rightRenderComp->SetTextureDimension(5, 45);
+		else rightRenderComp->SetTextureTransform(PositionX + Size - SizeSides, PositionY + SizeSides, 5, 40);
+	}
+}
+
 void Node::SetTextures()
 {
 	switch (Level)
@@ -119,7 +154,7 @@ void Node::SetTextures()
 	}
 }
 
-void Node::EnterNode(float x, float y)
+void Node::EnterNode(float x, float y, ActorComponent* actor)
 {
 	float xPos = PositionX - x;
 	float yPos = PositionY - y;
@@ -152,37 +187,56 @@ void Node::EnterNode(float x, float y)
 	{
 		centerRenderComp->SetTextureDimension(35, 35);
 		centerRenderComp->SetTexture("BlackTile.jpg");
+		Dug = true;
 	}
 
-	if (LeftEntered)
+	CheckSideTextures();
+	ModifyActorVec(actor, true);
+}
+
+bool Node::CheckForActor(ActorComponent * actorComp)
+{
+	for (ActorComponent* actor : actorCompVec)
 	{
-		leftRenderComp->SetTextureTransform(PositionX, PositionY + SizeSides, 5, 35);
+		if (actorComp == actor)
+			return true;
+	}
+	return false;
+}
+
+void Node::ModifyActorVec(ActorComponent * actorComp, bool add)
+{
+	if (add)
+		actorCompVec.push_back(actorComp);
+	else
+	{
+		auto index = std::find(actorCompVec.begin(), actorCompVec.end(), actorComp);
+
+		if (index != actorCompVec.end())
+			actorCompVec.erase(index);
+	}	
+}
+
+void Node::SideEntered(NodeSides side)
+{
+	switch (side)
+	{
+	case TOP:
+		TopEntered = true;
+		break;
+	case RIGHT:
+		RightEntered = true;
+		break;
+	case DOWN:
+		BottomEntered = true;
+		break;
+	case LEFT:
+		LeftEntered = true;
+		break;
+	case CENTER:
+		CenterEntered = true;
+		break;
 	}
 
-	if (LeftEntered && TopEntered)
-	{
-		leftRenderComp->SetTextureTransform(PositionX, PositionY, 5, 40);
-	}
-
-	if (LeftEntered && BottomEntered)
-	{
-		if (TopEntered)	leftRenderComp->SetTextureDimension(5, 45);
-		else leftRenderComp->SetTextureTransform(PositionX, PositionY + SizeSides, 5, 40);
-	}
-
-	if (RightEntered)
-	{
-		rightRenderComp->SetTextureTransform(PositionX + Size - SizeSides, PositionY + SizeSides, 5, 35);
-	}
-
-	if (RightEntered && TopEntered)
-	{
-		rightRenderComp->SetTextureTransform(PositionX + Size - SizeSides, PositionY, 5, 40);
-	}
-	
-	if (RightEntered && BottomEntered)
-	{
-		if (TopEntered)	rightRenderComp->SetTextureDimension(5, 45);
-		else rightRenderComp->SetTextureTransform(PositionX + Size - SizeSides, PositionY + SizeSides, 5, 40);
-	}
+	CheckSideTextures();
 }

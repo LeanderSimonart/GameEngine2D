@@ -5,6 +5,7 @@
 namespace dae
 {
 	class RenderComponent;
+	class Node;
 
 	enum Direction
 	{
@@ -14,10 +15,17 @@ namespace dae
 		LOOKINGDOWN
 	};
 
+	enum Type
+	{
+		DIGDUG,
+		FYGAR,
+		POOKA
+	};
+
 	class ActorComponent :	public BaseComponent
 	{
 	public:
-		ActorComponent();
+		ActorComponent(Type type) : actorType(type) {}
 		~ActorComponent();
 
 		virtual void Initialize();
@@ -29,12 +37,20 @@ namespace dae
 		void Left();
 		void Right();
 
+		Type GetType() { return actorType; }
+		Direction GetDirection() { return lookAtDirection; }
+
 	private:
+		Type actorType = Type::DIGDUG;
+
 		void GetTargetPosition(int index);
+		//void CheckNodeInteractions(float xPos, float yPos);
 
 		TransformComponent* transformComp = nullptr;
 		RenderComponent* renderComp = nullptr;
 		Direction lookAtDirection = Direction::LOOKINGLEFT;
+
+		Node* currentNode = nullptr;
 
 		void CheckGrid(float x, float y, int size);
 

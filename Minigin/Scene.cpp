@@ -13,6 +13,11 @@ void dae::Scene::Add(const std::shared_ptr<SceneObject>& object)
 	mObjects.push_back(object);
 }
 
+std::string dae::Scene::ReturnName() const
+{
+	return mName;
+}
+
 void dae::Scene::Update()
 {
 	for(auto gameObject : mObjects)

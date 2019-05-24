@@ -59,6 +59,15 @@ int LevelLoader::GetIndex(std::shared_ptr<GameObject> object)
 	return -1;
 }
 
+int LevelLoader::GetIndex(float x, float y)
+{
+	int xIndex = (int)x / nodeSize;
+	int yIndex = (int)y / nodeSize;
+
+	int index = xIndex + yIndex * Width;
+	return index;
+}
+
 int LevelLoader::HeightLevels(int currentHeight, int bottomRows, int middleRows,int highRows, int topRows, int skyRows)
 {
 	if (currentHeight >= bottomRows + middleRows + highRows + topRows + skyRows)

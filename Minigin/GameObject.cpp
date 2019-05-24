@@ -75,6 +75,17 @@ void GameObject::RemoveComponent(BaseComponent* comp)
 	comp->SetGameObject(nullptr);
 }
 
+void GameObject::RemoveAllComponents()
+{
+	for (auto *component : m_pComponents)
+	{
+		component->SetGameObject(nullptr);
+		delete component;
+	}
+
+	m_pComponents.clear();
+}
+
 //void GameObject::Render() const
 //{
 //	//const auto pos = mTransform.GetPosition();

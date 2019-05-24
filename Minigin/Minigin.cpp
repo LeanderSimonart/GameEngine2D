@@ -21,6 +21,7 @@
 #include "Display.h"
 #include "HealthComponent.h"
 #include "PointComponent.h"
+#include "RockComponent.h"
 
 void dae::Minigin::Initialize()
 {
@@ -59,7 +60,7 @@ void dae::Minigin::LoadGame() const
 	testChar->Initialize();
 	auto renderComp = new RenderComponent();
 	testChar->AddComponent(renderComp);
-	auto actorComp = new ActorComponent();
+	auto actorComp = new ActorComponent(Type::DIGDUG);
 	testChar->AddComponent(actorComp);
 	actorComp->Initialize();
 	auto healthComp = new HealthComponent(5);
@@ -90,6 +91,21 @@ void dae::Minigin::LoadGame() const
 	points->AddComponent(pointDisplay);
 	pointDisplay->Initialize();
 	scene.Add(points);
+
+	////
+	auto rock = std::make_shared<GameObject>();
+	auto rockRenderComp = new RenderComponent();
+	rock->AddComponent(rockRenderComp);
+	rock->Initialize();
+
+	rock->GetTransform()->SetPosition(157-8, 22-8);
+
+	rockRenderComp->SetTexture("WhiteTile.jpg");
+	auto rockComp = new RockComponent(154, 22, scene);
+	rock->AddComponent(rockComp);
+	rockComp->Initialize();
+
+	scene.Add(rock);
 	///Background
 	//auto background = std::make_shared<GameObject>();
 	//background->Initialize();

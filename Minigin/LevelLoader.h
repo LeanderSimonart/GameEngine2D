@@ -12,6 +12,7 @@ namespace dae
 	public:
 		void Load(int width, int height, Scene& scene);
 		int GetIndex(std::shared_ptr<GameObject> object);
+		int GetIndex(float x, float y);
 		std::shared_ptr<GameObject> CheckGrid(int index) { if (index >= NodeArray.size()) return nullptr; return NodeArray[index]; }
 		std::shared_ptr<GameObject> CheckGrid(float x, float y);
 

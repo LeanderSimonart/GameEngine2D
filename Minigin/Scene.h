@@ -9,6 +9,7 @@ namespace dae
 		friend Scene& SceneManager::CreateScene(const std::string& name);
 	public:
 		void Add(const std::shared_ptr<SceneObject>& object);
+		std::string ReturnName() const;
 
 		void Update();
 		void Render() const;
