@@ -33,6 +33,11 @@ namespace dae
 		void SideEntered(NodeSides side);
 		void SetNodeAsDug();
 
+		bool IsSideEntered(NodeSides side);
+		void SetNeighbours();
+		std::vector<Node*> GetNeighbours() { return mNeighbours; }
+		std::vector<Node*> GetOpenNeighbours();
+
 		std::vector<ActorComponent*> ReturnCurrentActors() { return actorCompVec; }
 
 		bool Dug = false;
@@ -45,9 +50,7 @@ namespace dae
 		float PositionY = 0;
 		int Size = 0;
 		int Level = 0;
-		int SizeSides = 5;
-
-		
+		int SizeSides = 5;		
 
 		bool LeftEntered = false;
 		bool RightEntered = false;
@@ -64,5 +67,6 @@ namespace dae
 		TransformComponent* transformComp = nullptr;
 
 		std::vector<ActorComponent*> actorCompVec;
+		std::vector<Node*> mNeighbours;
 	};
 }

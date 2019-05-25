@@ -9,11 +9,15 @@ namespace dae
 	public:
 		Scene & CreateScene(const std::string& name);
 
+		void SetActiveScene(const std::string& name);
+		void SetActiveScene(const int index);
+
 		void Update();
 		void Render();
 
 	private:
 		std::vector<std::shared_ptr<Scene>> mScenes;
+		std::shared_ptr<Scene> mActiveScene;
 	};
 
 }

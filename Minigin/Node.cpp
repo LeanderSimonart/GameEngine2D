@@ -3,6 +3,8 @@
 #include "GameObject.h"
 #include "RenderComponent.h"
 #include "TransformComponent.h"
+#include "LevelLoader.h"
+#include "ActorComponent.h"
 
 using namespace dae;
 
@@ -158,39 +160,43 @@ void Node::EnterNode(float x, float y, ActorComponent* actor)
 {
 	float xPos = PositionX - x;
 	float yPos = PositionY - y;
-
-	if (xPos > -5)
+	
+	if (actor->GetType() == Type::DIGDUG)
 	{
+		if (xPos > -5)
+		{
 		leftRenderComp->SetTexture("BlackTile.jpg");
 
 		LeftEntered = true;
-	}		
-	else if (xPos < -40)
-	{
-		rightRenderComp->SetTexture("BlackTile.jpg");
+		}
+		else if (xPos < -40)
+		{
+			rightRenderComp->SetTexture("BlackTile.jpg");
 
-		RightEntered = true;
-	}		
-	else if (yPos > -5)
-	{
-		topRenderComp->SetTexture("BlackTile.jpg");
+			RightEntered = true;
+		}
+		else if (yPos > -5)
+		{
+			topRenderComp->SetTexture("BlackTile.jpg");
 
-		TopEntered = true;
-	}		
-	else if (yPos < -40)
-	{
-		bottomRenderComp->SetTexture("BlackTile.jpg");
+			TopEntered = true;
+		}
+		else if (yPos < -40)
+		{
+			bottomRenderComp->SetTexture("BlackTile.jpg");
 
-		BottomEntered = true;
-	}		
-	else
-	{
-		centerRenderComp->SetTextureDimension(35, 35);
-		centerRenderComp->SetTexture("BlackTile.jpg");
-		Dug = true;
+			BottomEntered = true;
+		}
+		else
+		{
+			centerRenderComp->SetTextureDimension(35, 35);
+			centerRenderComp->SetTexture("BlackTile.jpg");
+			Dug = true;
+		}
+
+		CheckSideTextures();
 	}
-
-	CheckSideTextures();
+		
 	ModifyActorVec(actor, true);
 }
 
@@ -258,4 +264,91 @@ void dae::Node::SetNodeAsDug()
 	Dug = true;
 
 	CheckSideTextures();
+}
+
+bool dae::Node::IsSideEntered(NodeSides side)
+{
+	switch (side)
+	{
+	case TOP:
+		return TopEntered;
+		break;
+	case RIGHT:
+		return RightEntered;
+		break;
+	case DOWN:
+		return BottomEntered;
+		break;
+	case LEFT:
+		return LeftEntered;
+		break;
+	case CENTER:
+		return CenterEntered;
+		break;
+	}
+	return false;
+}
+
+void Node::SetNeighbours()
+{
+	auto& level = LevelLoader::GetInstance();
+	auto pos = GetGameObject()->GetTransform()->GetPosition();
+	int index = level.GetIndex(pos.x, pos.y);
+
+	std::shared_ptr<GameObject> object;
+
+	object = level.CheckGrid(index - 14);
+	if (object != nullptr) mNeighbours.push_back(object->GetComponent<Node>());
+	object = level.CheckGrid(index + 1);
+	if (object != nullptr) mNeighbours.push_back(object->GetComponent<Node>());
+	object = level.CheckGrid(index + 14);
+	if (object != nullptr) mNeighbours.push_back(object->GetComponent<Node>());
+	object = level.CheckGrid(index - 1);
+	if (object != nullptr) mNeighbours.push_back(object->GetComponent<Node>());
+}
+
+std::vector<Node*> dae::Node::GetOpenNeighbours()
+{
+	std::vector<Node*> openNeighbours;
+
+	for (Node* node : mNeighbours)
+	{
+		if (IsSideEntered(NodeSides::LEFT))
+		{
+			if (node->IsSideEntered(NodeSides::RIGHT) && node->IsSideEntered(NodeSides::CENTER))
+			{
+				openNeighbours.push_back(node);
+				continue;
+			}
+		}
+
+		if (IsSideEntered(NodeSides::RIGHT))
+		{
+			if (node->IsSideEntered(NodeSides::LEFT) && node->IsSideEntered(NodeSides::CENTER))
+			{
+				openNeighbours.push_back(node);
+				continue;
+			}
+		}
+
+		if (IsSideEntered(NodeSides::TOP))
+		{
+			if (node->IsSideEntered(NodeSides::DOWN) && node->IsSideEntered(NodeSides::CENTER))
+			{
+				openNeighbours.push_back(node);
+				continue;
+			}
+		}
+
+		if (IsSideEntered(NodeSides::DOWN))
+		{
+			if (node->IsSideEntered(NodeSides::TOP) && node->IsSideEntered(NodeSides::CENTER))
+			{
+				openNeighbours.push_back(node);
+				continue;
+			}
+		}
+	}
+
+	return openNeighbours;
 }

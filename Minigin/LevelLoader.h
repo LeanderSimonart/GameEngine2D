@@ -13,7 +13,7 @@ namespace dae
 		void Load(const std::string& name, Scene& scene);
 		int GetIndex(std::shared_ptr<GameObject> object);
 		int GetIndex(float x, float y);
-		std::shared_ptr<GameObject> CheckGrid(int index) { if (index >= NodeArray.size()) return nullptr; return NodeArray[index]; }
+		std::shared_ptr<GameObject> CheckGrid(int index) { if (index >= NodeArray.size()) return nullptr; if (index < 0) return nullptr; return NodeArray[index]; }
 		std::shared_ptr<GameObject> CheckGrid(float x, float y);
 
 		int Width = 0;
@@ -25,6 +25,7 @@ namespace dae
 		void UpdateNodes();
 		void CreateDigDugChar(Scene& scene, int index);
 		void CreateRocks(Scene& scene);
+		void CreatePooka(Scene& scene);
 
 		std::vector<std::shared_ptr<GameObject>> NodeArray = std::vector<std::shared_ptr<GameObject>>();
 		int HeightLevels(int currentHeight, int bottomRows, int middleRows, int highRows, int topRows, int skyRows);

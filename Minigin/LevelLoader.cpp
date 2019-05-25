@@ -7,6 +7,8 @@
 #include "HealthComponent.h"
 #include "RockComponent.h"
 
+#include "Pooka.h"
+
 #include <iostream>
 #include <fstream>
 
@@ -33,6 +35,8 @@ void LevelLoader::Load(const std::string& name, Scene& scene)
 	UpdateNodes();
 	// Place rocks
 	CreateRocks(scene);
+	//Create pooka
+	CreatePooka(scene);
 
 	//Main char
 	for (int i = 0; i < 2; i++)
@@ -163,6 +167,11 @@ void dae::LevelLoader::LoadNodes(Scene& scene)
 
 void dae::LevelLoader::UpdateNodes()
 {
+	for (std::shared_ptr<GameObject> node : NodeArray)
+	{
+		node->GetComponent<Node>()->SetNeighbours();
+	}
+
 	for (int index : mOpenNodes)
 	{
 		NodeArray[index]->GetComponent<Node>()->SetNodeAsDug();
@@ -176,7 +185,7 @@ void dae::LevelLoader::CreateDigDugChar(Scene & scene, int index)
 	testChar->Initialize();
 	auto renderComp = new RenderComponent();
 	testChar->AddComponent(renderComp);
-	auto actorComp = new ActorComponent(Type::DIGDUG);
+	auto actorComp = new ActorComponent(Type::DIGDUG, true);
 	testChar->AddComponent(actorComp);
 	actorComp->Initialize();
 	auto healthComp = new HealthComponent(5);
@@ -219,6 +228,28 @@ void dae::LevelLoader::CreateRocks(Scene & scene)
 
 		scene.Add(rock);
 	}
+}
+
+void dae::LevelLoader::CreatePooka(Scene & scene)
+{
+	for (int index : mPookaIndices)
+	{
+		auto object = std::make_shared<GameObject>();
+		auto renderComp = new RenderComponent();
+		object->AddComponent(renderComp);
+		object->Initialize();
+		renderComp->SetTexture("WhiteTile.jpg");
+
+		auto pos = CheckGrid(index)->GetTransform()->GetPosition();
+		pos.x += 22;
+		pos.y += 22;
+		auto pooka = new Pooka(pos.x, pos.y);
+		object->AddComponent(pooka);
+		pooka->Initialize();
+
+		scene.Add(object);
+	}
+
 }
 
 int LevelLoader::HeightLevels(int currentHeight, int bottomRows, int middleRows,int highRows, int topRows, int skyRows)

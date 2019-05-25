@@ -52,6 +52,7 @@ void dae::Minigin::Initialize()
 void dae::Minigin::LoadGame() const
 {
 	auto &scene = SceneManager::GetInstance().CreateScene("Demo");
+	SceneManager::GetInstance().SetActiveScene("Demo");
 
 	auto& levelLoader = LevelLoader::GetInstance();
 	levelLoader.Load("../Data/Level1.txt", scene);
