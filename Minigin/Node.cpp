@@ -16,6 +16,9 @@ void Node::Initialize()
 {
 	PositionX *= Size;
 	PositionY *= Size;
+
+	mOpenNeighbours = std::vector<Node*>(4, nullptr);
+	mNeighbours = mOpenNeighbours;
 	
 	transformComp = GetGameObject()->GetTransform();
 	transformComp->SetPosition(PositionX, PositionY);
@@ -35,27 +38,27 @@ void Node::Render()
 void Node::InitializeRenderComponents()
 {
 	topRenderComp = new RenderComponent();
-	topRenderComp->SetTextureDimension(45, 5);
+	topRenderComp->SetTextureDimension(Size, SizeSides);
 	topRenderComp->SetTexturePosition(PositionX, PositionY);
 	GetGameObject()->AddComponent(topRenderComp);
 
 	bottomRenderComp = new RenderComponent();
-	bottomRenderComp->SetTextureDimension(45, 5);
+	bottomRenderComp->SetTextureDimension(Size, SizeSides);
 	bottomRenderComp->SetTexturePosition(PositionX, PositionY + Size - SizeSides);
 	GetGameObject()->AddComponent(bottomRenderComp);
 
 	leftRenderComp = new RenderComponent();
-	leftRenderComp->SetTextureDimension(5, 45);
+	leftRenderComp->SetTextureDimension(SizeSides, Size);
 	leftRenderComp->SetTexturePosition(PositionX, PositionY);
 	GetGameObject()->AddComponent(leftRenderComp);
 
 	rightRenderComp = new RenderComponent();
-	rightRenderComp->SetTextureDimension(5, 45);
+	rightRenderComp->SetTextureDimension(SizeSides, Size);
 	rightRenderComp->SetTexturePosition(PositionX + Size - SizeSides, PositionY);
 	GetGameObject()->AddComponent(rightRenderComp);
 
 	centerRenderComp = new RenderComponent();
-	centerRenderComp->SetTextureDimension(35, 35);
+	centerRenderComp->SetTextureDimension((Size - SizeSides * 2), (Size - SizeSides * 2));
 	centerRenderComp->SetTexturePosition(PositionX + SizeSides, PositionY + SizeSides);
 	GetGameObject()->AddComponent(centerRenderComp);
 }
@@ -64,35 +67,49 @@ void Node::CheckSideTextures()
 {
 	if (LeftEntered)
 	{
-		leftRenderComp->SetTextureTransform(PositionX, PositionY + SizeSides, 5, 35);
+		leftRenderComp->SetTextureTransform(PositionX, PositionY + SizeSides, SizeSides, (Size - SizeSides * 2));
 	}
 
 	if (LeftEntered && TopEntered)
 	{
-		leftRenderComp->SetTextureTransform(PositionX, PositionY, 5, 40);
+		leftRenderComp->SetTextureTransform(PositionX, PositionY, SizeSides, (Size - SizeSides));
 	}
 
 	if (LeftEntered && BottomEntered)
 	{
-		if (TopEntered)	leftRenderComp->SetTextureDimension(5, 45);
-		else leftRenderComp->SetTextureTransform(PositionX, PositionY + SizeSides, 5, 40);
+		if (TopEntered)	leftRenderComp->SetTextureDimension(SizeSides, Size);
+		else leftRenderComp->SetTextureTransform(PositionX, PositionY + SizeSides, SizeSides, (Size - SizeSides));
 	}
 
 	if (RightEntered)
 	{
-		rightRenderComp->SetTextureTransform(PositionX + Size - SizeSides, PositionY + SizeSides, 5, 35);
+		rightRenderComp->SetTextureTransform(PositionX + Size - SizeSides, PositionY + SizeSides, SizeSides, (Size - SizeSides * 2));
 	}
 
 	if (RightEntered && TopEntered)
 	{
-		rightRenderComp->SetTextureTransform(PositionX + Size - SizeSides, PositionY, 5, 40);
+		rightRenderComp->SetTextureTransform(PositionX + Size - SizeSides, PositionY, SizeSides, (Size - SizeSides));
 	}
 
 	if (RightEntered && BottomEntered)
 	{
-		if (TopEntered)	rightRenderComp->SetTextureDimension(5, 45);
-		else rightRenderComp->SetTextureTransform(PositionX + Size - SizeSides, PositionY + SizeSides, 5, 40);
+		if (TopEntered)	rightRenderComp->SetTextureDimension(SizeSides, Size);
+		else rightRenderComp->SetTextureTransform(PositionX + Size - SizeSides, PositionY + SizeSides, SizeSides, (Size - SizeSides));
 	}
+}
+
+bool Node::CheckForAllOpenNeighbours()
+{
+	AllNeighboursOpen = true;
+	for (int i = 0; i < mNeighbours.size(); i++)
+	{
+		if (mNeighbours[i] != mOpenNeighbours[i])
+		{
+			AllNeighboursOpen = false;
+			return AllNeighboursOpen;
+		}
+	}
+	return AllNeighboursOpen;
 }
 
 void Node::SetTextures()
@@ -156,32 +173,32 @@ void Node::SetTextures()
 	}
 }
 
-void Node::EnterNode(float x, float y, ActorComponent* actor)
+void Node::UpdateNode(float x, float y, ActorComponent * actor)
 {
 	float xPos = PositionX - x;
 	float yPos = PositionY - y;
-	
+
 	if (actor->GetType() == Type::DIGDUG)
 	{
-		if (xPos > -5)
+		if (xPos >= -SizeSides)
 		{
-		leftRenderComp->SetTexture("BlackTile.jpg");
+			leftRenderComp->SetTexture("BlackTile.jpg");
 
-		LeftEntered = true;
+			LeftEntered = true;
 		}
-		else if (xPos < -40)
+		else if (xPos <= -(Size - SizeSides))
 		{
 			rightRenderComp->SetTexture("BlackTile.jpg");
 
 			RightEntered = true;
 		}
-		else if (yPos > -5)
+		else if (yPos >= -SizeSides)
 		{
 			topRenderComp->SetTexture("BlackTile.jpg");
 
 			TopEntered = true;
 		}
-		else if (yPos < -40)
+		else if (yPos <= -(Size - SizeSides))
 		{
 			bottomRenderComp->SetTexture("BlackTile.jpg");
 
@@ -189,13 +206,21 @@ void Node::EnterNode(float x, float y, ActorComponent* actor)
 		}
 		else
 		{
-			centerRenderComp->SetTextureDimension(35, 35);
+			centerRenderComp->SetTextureDimension((Size - SizeSides*2), (Size - SizeSides * 2));
 			centerRenderComp->SetTexture("BlackTile.jpg");
 			Dug = true;
 		}
 
 		CheckSideTextures();
 	}
+
+	UpdateOpenNeighbours();
+}
+
+void Node::EnterNode(ActorComponent* actor, Node* previousNode)
+{
+	if (previousNode != nullptr)
+		previousNode->LeaveNode(actor);
 		
 	ModifyActorVec(actor, true);
 }
@@ -264,6 +289,7 @@ void dae::Node::SetNodeAsDug()
 	Dug = true;
 
 	CheckSideTextures();
+	UpdateOpenNeighbours();
 }
 
 bool dae::Node::IsSideEntered(NodeSides side)
@@ -297,58 +323,86 @@ void Node::SetNeighbours()
 
 	std::shared_ptr<GameObject> object;
 
+	//TOP
 	object = level.CheckGrid(index - 14);
-	if (object != nullptr) mNeighbours.push_back(object->GetComponent<Node>());
+	if (object != nullptr) mNeighbours[0] = object->GetComponent<Node>();
+	//RIGHT
 	object = level.CheckGrid(index + 1);
-	if (object != nullptr) mNeighbours.push_back(object->GetComponent<Node>());
+	if (object != nullptr) mNeighbours[1] = object->GetComponent<Node>();
+	//BOTTOM
 	object = level.CheckGrid(index + 14);
-	if (object != nullptr) mNeighbours.push_back(object->GetComponent<Node>());
+	if (object != nullptr) mNeighbours[2] = object->GetComponent<Node>();
+	//LEFT
 	object = level.CheckGrid(index - 1);
-	if (object != nullptr) mNeighbours.push_back(object->GetComponent<Node>());
+	if (object != nullptr) mNeighbours[3] = object->GetComponent<Node>();
 }
 
-std::vector<Node*> dae::Node::GetOpenNeighbours()
+void dae::Node::UpdateOpenNeighbours()
 {
-	std::vector<Node*> openNeighbours;
+	if (AllNeighboursOpen)
+		return;
 
-	for (Node* node : mNeighbours)
+	for (int i = 0; i < mNeighbours.size(); i++)
 	{
-		if (IsSideEntered(NodeSides::LEFT))
+		if (mNeighbours[i] == nullptr) continue;
+		if (mOpenNeighbours[i] != nullptr) continue;
+		switch (i)
 		{
-			if (node->IsSideEntered(NodeSides::RIGHT) && node->IsSideEntered(NodeSides::CENTER))
-			{
-				openNeighbours.push_back(node);
-				continue;
-			}
+			case 0:
+				if (IsSideEntered(NodeSides::TOP) && mNeighbours[i]->IsSideEntered(NodeSides::DOWN)) mOpenNeighbours[i] = mNeighbours[i];
+				if (CheckForAllOpenNeighbours()) return;
+				break;
+			case 1:
+				if (IsSideEntered(NodeSides::RIGHT) && mNeighbours[i]->IsSideEntered(NodeSides::LEFT)) mOpenNeighbours[i] = mNeighbours[i];
+				if (CheckForAllOpenNeighbours()) return;
+				break;
+			case 2:
+				if (IsSideEntered(NodeSides::DOWN) && mNeighbours[i]->IsSideEntered(NodeSides::TOP)) mOpenNeighbours[i] = mNeighbours[i];
+				if (CheckForAllOpenNeighbours()) return;
+				break;
+			case 3:
+				if (IsSideEntered(NodeSides::LEFT) && mNeighbours[i]->IsSideEntered(NodeSides::RIGHT)) mOpenNeighbours[i] = mNeighbours[i];
+				if (CheckForAllOpenNeighbours()) return;
+				break;
 		}
+	}
+}
 
-		if (IsSideEntered(NodeSides::RIGHT))
-		{
-			if (node->IsSideEntered(NodeSides::LEFT) && node->IsSideEntered(NodeSides::CENTER))
-			{
-				openNeighbours.push_back(node);
-				continue;
-			}
-		}
+Node* Node::GetOpenNeighbour(NodeSides side)
+{
+	for (Node* node : mOpenNeighbours)
+	{
+		if (!node->IsSideEntered(NodeSides::CENTER))
+			continue;
 
-		if (IsSideEntered(NodeSides::TOP))
+		switch (side)
 		{
-			if (node->IsSideEntered(NodeSides::DOWN) && node->IsSideEntered(NodeSides::CENTER))
+		case TOP:
+			if (node->IsSideEntered(NodeSides::DOWN))
 			{
-				openNeighbours.push_back(node);
-				continue;
+				return node;
 			}
-		}
-
-		if (IsSideEntered(NodeSides::DOWN))
-		{
-			if (node->IsSideEntered(NodeSides::TOP) && node->IsSideEntered(NodeSides::CENTER))
+			break;
+		case RIGHT:
+			if (node->IsSideEntered(NodeSides::LEFT))
 			{
-				openNeighbours.push_back(node);
-				continue;
+				return node;
 			}
+			break;
+		case DOWN:
+			if (node->IsSideEntered(NodeSides::TOP))
+			{
+				return node;
+			}
+			break;
+		case LEFT:
+			if (node->IsSideEntered(NodeSides::RIGHT))
+			{
+				return node;
+			}
+			break;
 		}
 	}
 
-	return openNeighbours;
+	return nullptr;
 }

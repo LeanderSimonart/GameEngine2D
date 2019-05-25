@@ -19,14 +19,15 @@ namespace dae
 	class Node : public BaseComponent
 	{
 	public:
-		Node(int positionX, int positionY, int size, int level) : PositionX((float)positionX), PositionY((float)positionY), Size(size), Level(level) {}
+		Node(int positionX, int positionY, int size, int level) : PositionX((float)positionX), PositionY((float)positionY), Size((float)size), Level(level) {}
 		~Node();
 
 		virtual void Initialize();
 		virtual void Update();
 		virtual void Render();
 
-		void EnterNode(float x, float y, ActorComponent* actor);
+		void UpdateNode(float x, float y, ActorComponent* actor);
+		void EnterNode(ActorComponent* actor,Node* previousNode);
 		void LeaveNode(ActorComponent* actor) { ModifyActorVec(actor, false); }
 		bool CheckForActor(ActorComponent* actorComp);
 		void ModifyActorVec(ActorComponent* actorComp, bool add);
@@ -36,7 +37,9 @@ namespace dae
 		bool IsSideEntered(NodeSides side);
 		void SetNeighbours();
 		std::vector<Node*> GetNeighbours() { return mNeighbours; }
-		std::vector<Node*> GetOpenNeighbours();
+		std::vector<Node*> GetOpenNeighbours() { return mOpenNeighbours; }
+		void UpdateOpenNeighbours();
+		Node* GetOpenNeighbour(NodeSides side);
 
 		std::vector<ActorComponent*> ReturnCurrentActors() { return actorCompVec; }
 
@@ -45,18 +48,23 @@ namespace dae
 		void SetTextures();
 		void InitializeRenderComponents();
 		void CheckSideTextures();
+		bool CheckForAllOpenNeighbours();
 
 		float PositionX = 0;
 		float PositionY = 0;
-		int Size = 0;
+		
 		int Level = 0;
-		int SizeSides = 5;		
+
+		float Size = 0;
+		float SizeSides = 1;		
 
 		bool LeftEntered = false;
 		bool RightEntered = false;
 		bool TopEntered = false;
 		bool BottomEntered = false;
 		bool CenterEntered = false;
+
+		bool AllNeighboursOpen = false;
 
 		RenderComponent* leftRenderComp = nullptr;
 		RenderComponent* rightRenderComp = nullptr;
@@ -68,5 +76,6 @@ namespace dae
 
 		std::vector<ActorComponent*> actorCompVec;
 		std::vector<Node*> mNeighbours;
+		std::vector<Node*> mOpenNeighbours;
 	};
 }

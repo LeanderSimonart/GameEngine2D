@@ -15,6 +15,7 @@ namespace dae
 		int GetIndex(float x, float y);
 		std::shared_ptr<GameObject> CheckGrid(int index) { if (index >= NodeArray.size()) return nullptr; if (index < 0) return nullptr; return NodeArray[index]; }
 		std::shared_ptr<GameObject> CheckGrid(float x, float y);
+		std::vector<ActorComponent*> GetDigDugChars() { return mDigDugChars; }
 
 		int Width = 0;
 		int Height = 0;
@@ -37,6 +38,8 @@ namespace dae
 		std::vector<int> mFygarIndices;
 		std::vector<int> mRockIndices;
 		std::vector<int> mOpenNodes;
+
+		std::vector<ActorComponent*> mDigDugChars;
 
 		int mBottomRows = 0;
 		int mMiddleRows = 0;

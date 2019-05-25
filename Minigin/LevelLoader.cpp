@@ -31,8 +31,6 @@ void LevelLoader::Load(const std::string& name, Scene& scene)
 	Parser();
 	LoadNodes(scene);
 
-	// Open nodes
-	UpdateNodes();
 	// Place rocks
 	CreateRocks(scene);
 	//Create pooka
@@ -46,6 +44,9 @@ void LevelLoader::Load(const std::string& name, Scene& scene)
 			break;
 		CreateDigDugChar(scene, mStartIndex2);
 	}
+
+	// Open nodes
+	UpdateNodes();
 }
 
 std::shared_ptr<GameObject> LevelLoader::CheckGrid(float x, float y)
@@ -176,6 +177,11 @@ void dae::LevelLoader::UpdateNodes()
 	{
 		NodeArray[index]->GetComponent<Node>()->SetNodeAsDug();
 	}
+
+	for (int index : mOpenNodes)
+	{
+		NodeArray[index]->GetComponent<Node>()->UpdateOpenNeighbours();
+	}
 }
 
 void dae::LevelLoader::CreateDigDugChar(Scene & scene, int index)
@@ -205,6 +211,8 @@ void dae::LevelLoader::CreateDigDugChar(Scene & scene, int index)
 	pos.x += 22;
 	pos.y += 22;
 	testChar->GetTransform()->SetPosition(pos.x, pos.y);
+
+	mDigDugChars.push_back(actorComp);
 }
 
 void dae::LevelLoader::CreateRocks(Scene & scene)

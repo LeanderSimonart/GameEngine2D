@@ -31,7 +31,8 @@ void ActorComponent::Initialize()
 
 	auto pos = transformComp->GetPosition();
 	currentNode = level.CheckGrid(pos.x, pos.y)->GetComponent<Node>();
-	currentNode->EnterNode(pos.x, pos.y,this);
+	currentNode->UpdateNode(pos.x, pos.t, this);
+	currentNode->EnterNode(this, nullptr);
 }
 
 void ActorComponent::Update()
@@ -246,28 +247,29 @@ void ActorComponent::CheckGrid(float x, float y, int size)
 {
 	auto& level = LevelLoader::GetInstance();
 	std::shared_ptr<GameObject> object;
+	auto prevNode = currentNode;
 
 	switch (GetDirection())
 	{
 	case LOOKINGLEFT:
-		currentNode->LeaveNode(this);			
 		currentNode = level.CheckGrid(x, y)->GetComponent<Node>();
-		currentNode->EnterNode(x, y, this);		
+		currentNode->UpdateNode(x, y, this);
+		currentNode->EnterNode(this, prevNode);
 		break;
 	case LOOKINGRIGHT:
-		currentNode->LeaveNode(this);
 		currentNode = level.CheckGrid(x + size, y)->GetComponent<Node>();
-		currentNode->EnterNode(x + size, y, this);
+		currentNode->UpdateNode(x + size, y, this);
+		currentNode->EnterNode(this, prevNode);
 		break;
 	case LOOKINGUP:
-		currentNode->LeaveNode(this);
 		currentNode = level.CheckGrid(x, y)->GetComponent<Node>();
-		currentNode->EnterNode(x, y, this);
+		currentNode->UpdateNode(x, y, this);
+		currentNode->EnterNode(this, prevNode);
 		break;
 	case LOOKINGDOWN:
-		currentNode->LeaveNode(this);
 		currentNode = level.CheckGrid(x, y + size)->GetComponent<Node>();
-		currentNode->EnterNode(x, y + size, this);
+		currentNode->UpdateNode(x, y + size, this);
+		currentNode->EnterNode(this, prevNode);
 		break;
 	}
 }

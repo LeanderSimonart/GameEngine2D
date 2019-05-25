@@ -3,6 +3,8 @@
 
 namespace dae
 {
+	class LevelLoader;
+
 	class Pooka : public ActorComponent
 	{
 	public:
@@ -21,6 +23,8 @@ namespace dae
 		void SetTarget(bool set) { targetSet = set; }
 		void SetTargetPos(glm::vec3 pos) { targetPos = pos; }
 		glm::vec3 GetTargetPos() { return targetPos; }
+
+		void CheckForPlayers();
 	private:
 		Type actorType = Type::POOKA;
 
@@ -35,5 +39,6 @@ namespace dae
 		bool targetSet = false;
 
 		glm::vec3 targetPos = { 0,0,0 };
+		glm::vec3 lastPlayerPos = { 0,0,0 };
 	};
 }
