@@ -4,7 +4,7 @@
 #include "RenderComponent.h"
 #include "TransformComponent.h"
 #include "LevelLoader.h"
-#include "ActorComponent.h"
+
 
 using namespace dae;
 
@@ -173,12 +173,12 @@ void Node::SetTextures()
 	}
 }
 
-void Node::UpdateNode(float x, float y, ActorComponent * actor)
+void Node::UpdateNode(float x, float y, Type actorType)
 {
 	float xPos = PositionX - x;
 	float yPos = PositionY - y;
 
-	if (actor->GetType() == Type::DIGDUG)
+	if (actorType == Type::DIGDUG)
 	{
 		if (xPos >= -SizeSides)
 		{
@@ -208,6 +208,7 @@ void Node::UpdateNode(float x, float y, ActorComponent * actor)
 		{
 			centerRenderComp->SetTextureDimension((Size - SizeSides*2), (Size - SizeSides * 2));
 			centerRenderComp->SetTexture("BlackTile.jpg");
+			CenterEntered = true;
 			Dug = true;
 		}
 
@@ -346,6 +347,8 @@ void dae::Node::UpdateOpenNeighbours()
 	{
 		if (mNeighbours[i] == nullptr) continue;
 		if (mOpenNeighbours[i] != nullptr) continue;
+		if (!mNeighbours[i]->IsSideEntered(NodeSides::CENTER)) continue;
+
 		switch (i)
 		{
 			case 0:
@@ -370,39 +373,5 @@ void dae::Node::UpdateOpenNeighbours()
 
 Node* Node::GetOpenNeighbour(NodeSides side)
 {
-	for (Node* node : mOpenNeighbours)
-	{
-		if (!node->IsSideEntered(NodeSides::CENTER))
-			continue;
-
-		switch (side)
-		{
-		case TOP:
-			if (node->IsSideEntered(NodeSides::DOWN))
-			{
-				return node;
-			}
-			break;
-		case RIGHT:
-			if (node->IsSideEntered(NodeSides::LEFT))
-			{
-				return node;
-			}
-			break;
-		case DOWN:
-			if (node->IsSideEntered(NodeSides::TOP))
-			{
-				return node;
-			}
-			break;
-		case LEFT:
-			if (node->IsSideEntered(NodeSides::RIGHT))
-			{
-				return node;
-			}
-			break;
-		}
-	}
-
-	return nullptr;
+	return mOpenNeighbours[int(side)];
 }

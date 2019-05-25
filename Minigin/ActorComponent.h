@@ -39,7 +39,7 @@ namespace dae
 		void Right();
 
 		void GetTargetPosition(int index);
-		void CheckGrid(float x, float y, int size);
+		void CheckGrid(float x, float y, float size);
 
 		virtual Type GetType() { return actorType; }
 		virtual Direction GetDirection() { return lookAtDirection; }
@@ -48,6 +48,8 @@ namespace dae
 		virtual bool HasTarget() { return targetSet; }
 		virtual void SetTarget(bool set) { targetSet = set; }
 		virtual void SetTargetPos(glm::vec3 pos) { targetPos = pos; }
+		virtual Node* GetCurrentNode() { return currentNode; }
+		virtual void SetCurrentNode(Node* node) { currentNode = node; }
 		virtual glm::vec3 GetTargetPos() { return targetPos; }
 		std::vector<Node*> GetOpenNodes();
 	private:

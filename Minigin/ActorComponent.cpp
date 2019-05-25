@@ -25,14 +25,17 @@ void ActorComponent::Initialize()
 
 	renderComp = GetGameObject()->GetComponent<RenderComponent>();
 	transformComp = GetGameObject()->GetTransform();
-	transformComp->SetPosition(0.0f, 0.0f);
+	//transformComp->SetPosition(0.0f, 0.0f);
 	renderComp->SetOffset(-7.5f, -7.5f);
 	renderComp->SetTexture("WhiteTile.jpg");
 
+
+
 	auto pos = transformComp->GetPosition();
-	currentNode = level.CheckGrid(pos.x, pos.y)->GetComponent<Node>();
-	currentNode->UpdateNode(pos.x, pos.t, this);
-	currentNode->EnterNode(this, nullptr);
+	SetCurrentNode(level.CheckGrid(pos.x, pos.y)->GetComponent<Node>());
+	GetCurrentNode()->UpdateNode(pos.x, pos.y, GetType());
+	GetCurrentNode()->EnterNode(this, nullptr);
+	GetCurrentNode()->SetNodeAsDug();
 }
 
 void ActorComponent::Update()
@@ -94,7 +97,7 @@ void ActorComponent::Up()
 	}
 
 	transformComp->SetPosition(pos.x, pos.y);
-	CheckGrid(pos.x, pos.y, 14);
+	CheckGrid(pos.x, pos.y, 15);
 }
 
 void ActorComponent::Down()
@@ -141,7 +144,7 @@ void ActorComponent::Down()
 	}
 
 	transformComp->SetPosition(pos.x, pos.y);
-	CheckGrid(pos.x, pos.y, 14);
+	CheckGrid(pos.x, pos.y, 15);
 }
 
 void ActorComponent::Left()
@@ -188,7 +191,7 @@ void ActorComponent::Left()
 	}
 
 	transformComp->SetPosition(pos.x, pos.y);
-	CheckGrid(pos.x, pos.y, 14);
+	CheckGrid(pos.x, pos.y, 15);
 }
 
 void ActorComponent::Right()
@@ -235,41 +238,52 @@ void ActorComponent::Right()
 	}
 
 	transformComp->SetPosition(pos.x, pos.y);
-	CheckGrid(pos.x, pos.y, 14);
+	CheckGrid(pos.x, pos.y, 15);
 }
 
 std::vector<Node*> ActorComponent::GetOpenNodes()
 {
-	return currentNode->GetOpenNeighbours();
+	return GetCurrentNode()->GetOpenNeighbours();
 }
 
-void ActorComponent::CheckGrid(float x, float y, int size)
+void ActorComponent::CheckGrid(float x, float y, float size)
 {
 	auto& level = LevelLoader::GetInstance();
 	std::shared_ptr<GameObject> object;
-	auto prevNode = currentNode;
+	auto prevNode = GetCurrentNode();
+	auto nextNode = prevNode;
+
+	SetCurrentNode(level.CheckGrid(x, y)->GetComponent<Node>());
 
 	switch (GetDirection())
 	{
 	case LOOKINGLEFT:
-		currentNode = level.CheckGrid(x, y)->GetComponent<Node>();
-		currentNode->UpdateNode(x, y, this);
-		currentNode->EnterNode(this, prevNode);
+		nextNode = level.CheckGrid(x - size / 2, y)->GetComponent<Node>();
+		nextNode->UpdateNode(x - size / 2, y, GetType());
+
+		GetCurrentNode()->UpdateNode(x - size / 2, y, GetType());
+		GetCurrentNode()->EnterNode(this, prevNode);
 		break;
 	case LOOKINGRIGHT:
-		currentNode = level.CheckGrid(x + size, y)->GetComponent<Node>();
-		currentNode->UpdateNode(x + size, y, this);
-		currentNode->EnterNode(this, prevNode);
+		nextNode = level.CheckGrid(x + size / 2, y)->GetComponent<Node>();
+		nextNode->UpdateNode(x + size / 2, y, GetType());
+
+		GetCurrentNode()->UpdateNode(x + size / 2, y, GetType());
+		GetCurrentNode()->EnterNode(this, prevNode);
 		break;
 	case LOOKINGUP:
-		currentNode = level.CheckGrid(x, y)->GetComponent<Node>();
-		currentNode->UpdateNode(x, y, this);
-		currentNode->EnterNode(this, prevNode);
+		nextNode = level.CheckGrid(x, y - size / 2)->GetComponent<Node>();
+		nextNode->UpdateNode(x, y - size / 2, GetType());
+
+		GetCurrentNode()->UpdateNode(x, y - size / 2, GetType());
+		GetCurrentNode()->EnterNode(this, prevNode);
 		break;
-	case LOOKINGDOWN:
-		currentNode = level.CheckGrid(x, y + size)->GetComponent<Node>();
-		currentNode->UpdateNode(x, y + size, this);
-		currentNode->EnterNode(this, prevNode);
+	case LOOKINGDOWN:		
+		nextNode = level.CheckGrid(x, y + size / 2)->GetComponent<Node>();
+		nextNode->UpdateNode(x, y + size / 2, GetType());
+
+		GetCurrentNode()->UpdateNode(x, y + size / 2, GetType());
+		GetCurrentNode()->EnterNode(this, prevNode);
 		break;
 	}
 }
@@ -322,10 +336,16 @@ void ActorComponent::GetTargetPosition(int index)
 	if (!HasTarget() && currentObject != nullptr)
 	{
 		auto currentObjectPos = currentObject->GetTransform()->GetPosition();
-		currentObjectPos.x += 22;
-		currentObjectPos.y += 22;
+		currentObjectPos.x += 22.5f;
+		currentObjectPos.y += 22.5f;
 
-		if (GoToCenter(pos, currentObjectPos)) return;
+		if (GetType() == Type::DIGDUG)
+		{
+			if (GoToCenter(pos, currentObjectPos)) return;
+		}
+		else if (GoToCenter(pos, GetTargetPos())) return;
+			
+		
 		
 		//If we are at the center we can go to the next node.		
 		int currentIndex = level.GetIndex(currentObject);
@@ -350,23 +370,23 @@ void ActorComponent::GetTargetPosition(int index)
 			if (GetType() == Type::DIGDUG)
 			{
 				pos = targetObject->GetTransform()->GetPosition();
-				pos.x += 22;
-				pos.y += 22;
+				pos.x += 22.5f;
+				pos.y += 22.5f;
 				SetTargetPos(pos);
 				return;
 			}
 
-			for (auto target : currentObject->GetComponent<Node>()->GetOpenNeighbours())
-			{
-				if (target == targetObject->GetComponent<Node>())
-				{
-					pos = targetObject->GetTransform()->GetPosition();
-					pos.x += 22;
-					pos.y += 22;
-					SetTargetPos(pos);
-					return;
-				}
-			}			
+			//for (auto target : currentObject->GetComponent<Node>()->GetOpenNeighbours())
+			//{
+			//	if (target == targetObject->GetComponent<Node>())
+			//	{
+			//		pos = targetObject->GetTransform()->GetPosition();
+			//		pos.x += 22;
+			//		pos.y += 22;
+			//		SetTargetPos(pos);
+			//		return;
+			//	}
+			//}			
 		}		
 	}
 }

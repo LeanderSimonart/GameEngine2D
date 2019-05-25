@@ -1,11 +1,11 @@
 #pragma once
 #include "BaseComponent.h"
+#include "ActorComponent.h"
 
 namespace dae
 {
 	class RenderComponent;
 	class TransformComponent;
-	class ActorComponent;
 
 	enum NodeSides
 	{		
@@ -26,7 +26,7 @@ namespace dae
 		virtual void Update();
 		virtual void Render();
 
-		void UpdateNode(float x, float y, ActorComponent* actor);
+		void UpdateNode(float x, float y, Type actorType);
 		void EnterNode(ActorComponent* actor,Node* previousNode);
 		void LeaveNode(ActorComponent* actor) { ModifyActorVec(actor, false); }
 		bool CheckForActor(ActorComponent* actorComp);

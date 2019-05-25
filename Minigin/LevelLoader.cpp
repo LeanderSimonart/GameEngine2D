@@ -30,7 +30,9 @@ void LevelLoader::Load(const std::string& name, Scene& scene)
 
 	Parser();
 	LoadNodes(scene);
-
+	
+	// Open nodes
+	UpdateNodes();
 	// Place rocks
 	CreateRocks(scene);
 	//Create pooka
@@ -44,9 +46,6 @@ void LevelLoader::Load(const std::string& name, Scene& scene)
 			break;
 		CreateDigDugChar(scene, mStartIndex2);
 	}
-
-	// Open nodes
-	UpdateNodes();
 }
 
 std::shared_ptr<GameObject> LevelLoader::CheckGrid(float x, float y)
@@ -63,6 +62,17 @@ int LevelLoader::GetIndex(std::shared_ptr<GameObject> object)
 	for (int i = 0; i < NodeArray.size(); i++)
 	{
 		if (NodeArray[i] == object)
+			return i;
+	}
+
+	return -1;
+}
+
+int LevelLoader::GetIndex(Node* node)
+{
+	for (int i = 0; i < NodeArray.size(); i++)
+	{
+		if (NodeArray[i]->GetComponent<Node>() == node)
 			return i;
 	}
 
@@ -189,8 +199,18 @@ void dae::LevelLoader::CreateDigDugChar(Scene & scene, int index)
 	//Char
 	auto testChar = std::make_shared<GameObject>();
 	testChar->Initialize();
+
+	//Render
 	auto renderComp = new RenderComponent();
 	testChar->AddComponent(renderComp);
+
+	//Position
+	auto pos = CheckGrid(index)->GetTransform()->GetPosition();
+	pos.x += 22.5f;
+	pos.y += 22.5f;
+	testChar->GetTransform()->SetPosition(pos.x, pos.y);
+
+	//Components
 	auto actorComp = new ActorComponent(Type::DIGDUG, true);
 	testChar->AddComponent(actorComp);
 	actorComp->Initialize();
@@ -206,12 +226,6 @@ void dae::LevelLoader::CreateDigDugChar(Scene & scene, int index)
 	healthDisplay->Initialize();
 	scene.Add(lives);
 
-	//Position
-	auto pos = CheckGrid(index)->GetTransform()->GetPosition();
-	pos.x += 22;
-	pos.y += 22;
-	testChar->GetTransform()->SetPosition(pos.x, pos.y);
-
 	mDigDugChars.push_back(actorComp);
 }
 
@@ -225,8 +239,8 @@ void dae::LevelLoader::CreateRocks(Scene & scene)
 		rock->Initialize();
 
 		auto pos = CheckGrid(index)->GetTransform()->GetPosition();
-		pos.x += 22;
-		pos.y += 22;
+		pos.x += 22.5f;
+		pos.y += 22.5f;
 		rock->GetTransform()->SetPosition(pos.x - 8, pos.y - 8); // 8 = half of texturesize
 
 		rockRenderComp->SetTexture("WhiteTile.jpg");
@@ -249,8 +263,8 @@ void dae::LevelLoader::CreatePooka(Scene & scene)
 		renderComp->SetTexture("WhiteTile.jpg");
 
 		auto pos = CheckGrid(index)->GetTransform()->GetPosition();
-		pos.x += 22;
-		pos.y += 22;
+		pos.x += 22.5f;
+		pos.y += 22.5f;
 		auto pooka = new Pooka(pos.x, pos.y);
 		object->AddComponent(pooka);
 		pooka->Initialize();
