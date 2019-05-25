@@ -13,11 +13,6 @@ namespace dae
 		virtual void Update();
 		virtual void Render();
 
-		void Up();
-		void Down();
-		void Left();
-		void Right();
-
 		Type GetType() { return actorType; }
 		Direction GetDirection() { return lookAtDirection; }
 		void SetDirection(Direction direction) { lookAtDirection = direction; }

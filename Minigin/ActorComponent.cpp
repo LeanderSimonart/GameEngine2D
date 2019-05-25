@@ -82,16 +82,10 @@ void ActorComponent::Up()
 		}
 		break;
 	case LOOKINGUP:
-		pos.y -= 1;
-		if (pos.y < 0)
-			pos.y = 0;
-
-		SetTarget(false);
-		break;
 	case LOOKINGDOWN:
-		pos.y -= 1;
-		if (pos.y < 0)
-			pos.y = 0;
+		GetTargetPosition(-14);
+		if (pos.y > GetTargetPos().y)
+			pos.y -= 1;
 
 		SetDirection(Direction::LOOKINGUP);
 		SetTarget(false);
@@ -135,18 +129,12 @@ void ActorComponent::Down()
 		}
 		break;
 	case LOOKINGUP:
-		pos.y += 1;
-		if (pos.y > 810 - 15)
-			pos.y = 810 - 15;
+	case LOOKINGDOWN:
+		GetTargetPosition(14);
+		if (pos.y < GetTargetPos().y)
+			pos.y += 1;
 
 		SetDirection(Direction::LOOKINGDOWN);
-		SetTarget(false);
-		break;
-	case LOOKINGDOWN:
-		pos.y += 1;
-		if (pos.y > 810 - 15)
-			pos.y = 810 - 15;
-		
 		SetTarget(false);
 		break;
 	}
@@ -162,16 +150,10 @@ void ActorComponent::Left()
 	switch (GetDirection())
 	{
 	case LOOKINGLEFT:
-		pos.x -= 1;
-		if (pos.x < 0)
-			pos.x = 0;
-
-		SetTarget(false);
-		break;
 	case LOOKINGRIGHT:
-		pos.x -= 1;
-		if (pos.x < 0)
-			pos.x = 0;
+		GetTargetPosition(-1);
+		if (pos.x > GetTargetPos().x)
+			pos.x -= 1;
 
 		SetDirection(Direction::LOOKINGLEFT);
 		SetTarget(false);
@@ -215,22 +197,16 @@ void ActorComponent::Right()
 	switch (GetDirection())
 	{
 	case LOOKINGLEFT:
-		pos.x += 1;
-		if (pos.x > 630 - 15)
-			pos.x = 630 - 15;
+	case LOOKINGRIGHT:
+		GetTargetPosition(1);
+		if (pos.x < GetTargetPos().x)
+			pos.x += 1;
 
 		SetDirection(Direction::LOOKINGRIGHT);
 		SetTarget(false);
 		break;
-	case LOOKINGRIGHT:
-		pos.x += 1;
-		if (pos.x > 630 - 15)
-			pos.x = 630 - 15;
-
-		SetTarget(false);
-		break;
 	case LOOKINGUP:
-		GetTargetPosition(-15);
+		GetTargetPosition(-14);
 
 		if (pos.y > GetTargetPos().y)
 		{
@@ -243,7 +219,7 @@ void ActorComponent::Right()
 		}
 		break;
 	case LOOKINGDOWN:
-		GetTargetPosition(15);
+		GetTargetPosition(14);
 
 		if (pos.y < GetTargetPos().y)
 		{
@@ -351,7 +327,20 @@ void ActorComponent::GetTargetPosition(int index)
 		
 		//If we are at the center we can go to the next node.		
 		int currentIndex = level.GetIndex(currentObject);
-		auto targetObject = level.CheckGrid(currentIndex + index);
+
+		// Fix the index if it would go out of bounds
+		int newIndex = 0;
+		float max = pos.x + 23;
+		float min = pos.x - 23;
+
+		if (max >= 630 && index == 1 || min <= 0 && index == -1)
+		{			
+			newIndex = 14 * index;
+		}
+		else newIndex = index;
+
+		// Get the target.
+		auto targetObject = level.CheckGrid(currentIndex + newIndex);
 
 		if (targetObject != nullptr)
 		{

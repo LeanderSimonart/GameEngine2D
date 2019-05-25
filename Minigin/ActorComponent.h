@@ -33,10 +33,10 @@ namespace dae
 		virtual void Update();
 		virtual void Render();
 
-		virtual void Up();
-		virtual void Down();
-		virtual void Left();
-		virtual void Right();
+		void Up();
+		void Down();
+		void Left();
+		void Right();
 
 		void GetTargetPosition(int index);
 		void CheckGrid(float x, float y, int size);
