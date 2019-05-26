@@ -3,6 +3,7 @@
 #include "GameObject.h"
 #include "LevelLoader.h"
 #include "Time.h"
+#include "HealthComponent.h"
 
 using namespace dae;
 
@@ -73,6 +74,22 @@ void Pooka::CheckForPlayers()
 	{
 		//Change this so second player can be chased as well.
 		GhostMovement(chars[0]);
+	}
+
+	auto playerPos = chars[0]->GetGameObject()->GetTransform()->GetPosition();
+	
+	auto distanceX = playerPos.x - pookaPos.x;
+	auto distanceY = playerPos.y - pookaPos.y;
+
+	if (distanceX < 0)
+		distanceX = -distanceX;
+
+	if (distanceY < 0)
+		distanceY = -distanceY;
+
+	if (distanceX < 7.5f && distanceY < 7.5f)
+	{
+		chars[0]->GetGameObject()->GetComponent<HealthComponent>()->UpdateLives(-1);
 	}
 }
 

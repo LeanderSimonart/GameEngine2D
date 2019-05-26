@@ -314,7 +314,7 @@ void dae::LevelLoader::CreateRocks(Scene & scene)
 		pos.y += 22.5f;
 		rock->GetTransform()->SetPosition(pos.x - 7.5f, pos.y - 7.5f); // 8 = half of texturesize
 
-		rockRenderComp->SetTexture("WhiteTile.jpg");
+		rockRenderComp->SetTexture("BrownTile.jpg");
 		auto rockComp = new RockComponent(scene);
 		rock->AddComponent(rockComp);
 		rockComp->Initialize();
@@ -332,7 +332,7 @@ void dae::LevelLoader::CreatePooka(Scene & scene)
 		auto renderComp = new RenderComponent();
 		object->AddComponent(renderComp);
 		object->Initialize();
-		renderComp->SetTexture("WhiteTile.jpg");
+		renderComp->SetTexture("GreyRedTile.jpg");
 
 		auto pos = CheckGrid(index)->GetTransform()->GetPosition();
 		pos.x += 22.5f;
