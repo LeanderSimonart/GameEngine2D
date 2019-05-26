@@ -2,6 +2,7 @@
 #include "Pooka.h"
 #include "GameObject.h"
 #include "LevelLoader.h"
+#include "Time.h"
 
 using namespace dae;
 
@@ -45,11 +46,39 @@ void Pooka::CheckForPlayers()
 	auto chars = level.GetDigDugChars();
 	auto pookaPos = transformComp->GetPosition();
 
-	for (auto digDug : chars)
+	if (pookaPos == GetTargetPos())
 	{
-		GetNewTarget(digDug);
+		charTargetSet = false;
+		randomMovementActive = false;
+	}
 
-		ChasePlayer(pookaPos);
+	if (!isGhost && isGhostFinished)
+	{
+		for (auto digDug : chars)
+		{
+			GetNewTarget(digDug);
+		}
+
+		if (!charTargetSet && !randomMovementActive)
+			RandomMovement();
+
+		if (!charTargetSet)
+		{
+			currentGhostDelay += Time::GetInstance().DeltaTime;
+			if (currentGhostDelay >= maxGhostDelay)
+			{
+				isGhost = true;
+				currentGhostDelay = 0.0f;
+			}
+		}
+
+		Move(pookaPos);
+	}
+	
+	if (isGhost)
+	{
+		//Change this so second player can be chased as well.
+		GhostMovement(chars[0]);
 	}
 }
 
@@ -105,6 +134,7 @@ void dae::Pooka::GetNewTarget(ActorComponent* actor)
 				}
 			}
 		}
+		else succes = false;
 	}
 	else if (playerColumn == pookaColumn)
 	{
@@ -122,8 +152,7 @@ void dae::Pooka::GetNewTarget(ActorComponent* actor)
 				}
 			}
 		}
-
-		if (nodeAmount < 0)
+		else if (nodeAmount < 0)
 		{
 			for (int i = 0; i < -nodeAmount; i++)
 			{
@@ -134,22 +163,21 @@ void dae::Pooka::GetNewTarget(ActorComponent* actor)
 				}
 			}
 		}
+		else succes = false;
 	}
 	else succes = false;
 
 	if (succes)
 	{
 		auto pos = actor->GetCurrentNode()->GetGameObject()->GetTransform()->GetPosition();
-		PlayerPos.first = pos.x;
-		PlayerPos.second = pos.y;
 		pos.x += 22.5f;
 		pos.y += 22.5f;
 		SetTargetPos(pos);
-		charTargetSet = true;
 	}
+	charTargetSet = succes;
 }
 
-void dae::Pooka::ChasePlayer(glm::vec3 pookaPos)
+void Pooka::Move(glm::vec3 pookaPos)
 {
 	switch (GetDirection())
 	{
@@ -160,17 +188,19 @@ void dae::Pooka::ChasePlayer(glm::vec3 pookaPos)
 			break;
 		}
 
-		if (pookaPos.y > PlayerPos.second)
+		if (pookaPos.y > GetTargetPos().y)
 		{
 			Up();
 			break;
 		}
 
-		if (pookaPos.y < PlayerPos.second)
+		if (pookaPos.y < GetTargetPos().y)
 		{
 			Down();
 			break;
 		}
+
+		RandomMovement();
 		break;
 	case LOOKINGRIGHT:
 		if (pookaPos.x < GetTargetPos().x)
@@ -179,17 +209,19 @@ void dae::Pooka::ChasePlayer(glm::vec3 pookaPos)
 			break;
 		}
 
-		if (pookaPos.y > PlayerPos.second)
+		if (pookaPos.y > GetTargetPos().y)
 		{
 			Up();
 			break;
 		}
 
-		if (pookaPos.y < PlayerPos.second)
+		if (pookaPos.y < GetTargetPos().y)
 		{
 			Down();
 			break;
 		}
+
+		RandomMovement();
 		break;
 	case LOOKINGUP:
 		if (pookaPos.y > GetTargetPos().y)
@@ -198,19 +230,20 @@ void dae::Pooka::ChasePlayer(glm::vec3 pookaPos)
 			break;
 		}
 
-		if (pookaPos.x < PlayerPos.first)
+		if (pookaPos.x < GetTargetPos().x)
 		{
 			Right();
 			break;
 		}
 
 
-		if (pookaPos.x > PlayerPos.first)
+		if (pookaPos.x > GetTargetPos().x)
 		{
 			Left();
 			break;
 		}
 
+		RandomMovement();
 		break;
 	case LOOKINGDOWN:
 		if (pookaPos.y < GetTargetPos().y)
@@ -219,17 +252,124 @@ void dae::Pooka::ChasePlayer(glm::vec3 pookaPos)
 			break;
 		}
 
-		if (pookaPos.x < PlayerPos.first)
+		if (pookaPos.x < GetTargetPos().x)
 		{
 			Right();
 			break;
 		}
 
-		if (pookaPos.x > PlayerPos.first)
+		if (pookaPos.x > GetTargetPos().x)
 		{
 			Left();
 			break;
 		}
+		RandomMovement();
 		break;
+	}
+}
+
+void Pooka::GhostMovement(ActorComponent * actor)
+{
+	currentGhostTracking += Time::GetInstance().DeltaTime;
+	if (currentGhostTracking >= maxGhostTracking)
+	{
+		isGhostFinished = true;
+		if (ghostPos == GetGameObject()->GetTransform()->GetPosition())
+		{			
+			charTargetSet = false;
+			randomMovementActive = false;
+			isGhost = false;
+			finalGhostPosSet = false;
+			currentGhostTracking = 0.0f;
+
+			
+			CheckGrid(ghostPos.x, ghostPos.y, 15);
+
+			return;
+		}		
+	}
+	else isGhostFinished = false;
+
+	if (!isGhostFinished)
+		ghostPos = actor->GetGameObject()->GetTransform()->GetPosition();
+	else if (!finalGhostPosSet)
+	{
+		auto& level = LevelLoader::GetInstance();
+		ghostPos = level.CheckGrid(ghostPos.x, ghostPos.y)->GetTransform()->GetPosition();
+		ghostPos.x += 22.5f;
+		ghostPos.y += 22.5f;
+		finalGhostPosSet = true;
+	}
+
+	auto currentPos = GetGameObject()->GetTransform()->GetPosition();
+
+	if (currentPos.x < ghostPos.x)
+		currentPos.x += 1;
+
+	if (currentPos.x > ghostPos.x)
+		currentPos.x -= 1;
+
+	if (currentPos.y < ghostPos.y)
+		currentPos.y += 1;
+
+	if (currentPos.y > ghostPos.y)
+		currentPos.y -= 1;
+
+	GetGameObject()->GetTransform()->SetPosition(currentPos.x,currentPos.y);
+}
+
+void Pooka::RandomMovement()
+{
+	Node* neighbour;
+	switch (GetDirection())
+	{
+		case LOOKINGDOWN:
+			neighbour = GetCurrentNode()->GetRandomOpenNeighbour(NodeSides::DOWN);
+			if (neighbour != nullptr)
+			{
+				auto pos = neighbour->GetGameObject()->GetTransform()->GetPosition();
+				pos.x += 22.5f;
+				pos.y += 22.5f;
+				SetTargetPos(pos);
+				randomMovementActive = true;
+				SetDirection(GetCurrentNode()->GetDirection(neighbour));
+			}			
+			break;
+		case LOOKINGUP:
+			neighbour = GetCurrentNode()->GetRandomOpenNeighbour(NodeSides::TOP);
+			if (neighbour != nullptr)
+			{
+				auto pos = neighbour->GetGameObject()->GetTransform()->GetPosition();
+				pos.x += 22.5f;
+				pos.y += 22.5f;
+				SetTargetPos(pos);
+				randomMovementActive = true;
+				SetDirection(GetCurrentNode()->GetDirection(neighbour));
+			}			
+			break;
+		case LOOKINGLEFT:			
+			neighbour = GetCurrentNode()->GetRandomOpenNeighbour(NodeSides::LEFT);
+			if (neighbour != nullptr)
+			{
+				auto pos = neighbour->GetGameObject()->GetTransform()->GetPosition();
+				pos.x += 22.5f;
+				pos.y += 22.5f;
+				SetTargetPos(pos);
+				randomMovementActive = true;
+				SetDirection(GetCurrentNode()->GetDirection(neighbour));
+			}			
+			break;
+		case LOOKINGRIGHT:			
+			neighbour = GetCurrentNode()->GetRandomOpenNeighbour(NodeSides::RIGHT);
+			if (neighbour != nullptr)
+			{
+				auto pos = neighbour->GetGameObject()->GetTransform()->GetPosition();
+				pos.x += 22.5f;
+				pos.y += 22.5f;
+				SetTargetPos(pos);
+				randomMovementActive = true;
+				SetDirection(GetCurrentNode()->GetDirection(neighbour));
+			}			
+			break;
 	}
 }

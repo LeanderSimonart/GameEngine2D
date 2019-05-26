@@ -9,10 +9,10 @@ namespace dae
 
 	enum Direction
 	{
-		LOOKINGLEFT,
-		LOOKINGRIGHT,
 		LOOKINGUP,
-		LOOKINGDOWN
+		LOOKINGRIGHT,
+		LOOKINGDOWN,
+		LOOKINGLEFT		
 	};
 
 	enum Type

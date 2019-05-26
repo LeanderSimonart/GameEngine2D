@@ -34,6 +34,9 @@ namespace dae
 		void SideEntered(NodeSides side);
 		void SetNodeAsDug();
 
+		Node* GetRandomOpenNeighbour(NodeSides side);
+		Direction GetDirection(Node* node);
+
 		bool IsSideEntered(NodeSides side);
 		void SetNeighbours();
 		std::vector<Node*> GetNeighbours() { return mNeighbours; }
@@ -52,6 +55,10 @@ namespace dae
 
 		float PositionX = 0;
 		float PositionY = 0;
+
+		int highChance = 55;
+		int baseChance = 22;
+		int lowChance = 1;
 		
 		int Level = 0;
 

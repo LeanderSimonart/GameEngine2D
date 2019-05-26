@@ -1,5 +1,9 @@
 #include "MiniginPCH.h"
 #include "HealthComponent.h"
+#include "GameObject.h"
+#include "Node.h"
+#include "ActorComponent.h"
+#include "Pooka.h"
 
 using namespace dae;
 
@@ -26,11 +30,17 @@ void HealthComponent::UpdateLives(int amount)
 	if (mCurrentLives <= 0) Death();
 }
 
-std::string dae::HealthComponent::ReturnDisplayText()
+std::string HealthComponent::ReturnDisplayText()
 {
 	return "Lives: " + std::to_string(ReturnCurrentLives());
 }
 
-void dae::HealthComponent::Death()
+void HealthComponent::Death()
 {
+	auto actor = GetGameObject()->GetComponent<Pooka>();
+	if (actor == nullptr) GetGameObject()->GetComponent<ActorComponent>();
+	if (actor == nullptr) return;
+
+	actor->GetCurrentNode()->LeaveNode(actor);
+	GetGameObject()->RemoveAllComponents();
 }

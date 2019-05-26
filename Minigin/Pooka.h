@@ -31,11 +31,20 @@ namespace dae
 		void CheckForPlayers();
 	private:
 		void GetNewTarget(ActorComponent* actor);
-		void ChasePlayer(glm::vec3 pookaPos);
+		void Move(glm::vec3 pookaPos);
+		void GhostMovement(ActorComponent* actor);
+
+		void RandomMovement();
+
 		Type actorType = Type::POOKA;
 
 		float xPosition;
 		float yPosition;
+
+		float currentGhostDelay = 0.0f;
+		float maxGhostDelay = 5.0f;
+		float currentGhostTracking = 0.0f;
+		float maxGhostTracking = 0.5f;
 
 		TransformComponent* transformComp = nullptr;
 		RenderComponent* renderComp = nullptr;
@@ -44,9 +53,15 @@ namespace dae
 
 		bool targetSet = false;
 		bool charTargetSet = false;
+		bool randomMovementActive = false;
+
+		bool isGhost = false;
+		bool isGhostFinished = true;
+		bool finalGhostPosSet = false;
 
 		glm::vec3 targetPos = { 0,0,0 };
 		glm::vec3 lastPlayerPos = { 0,0,0 };
+		glm::vec3 ghostPos = { 0,0,0 };
 
 		std::pair<int, int> PlayerRC;
 		std::pair<float, float> PlayerPos;

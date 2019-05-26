@@ -5,6 +5,8 @@
 #include "TransformComponent.h"
 #include "LevelLoader.h"
 
+#include <ctime>
+#include <cstdlib>
 
 using namespace dae;
 
@@ -25,6 +27,8 @@ void Node::Initialize()
 
 	InitializeRenderComponents();
 	SetTextures();
+
+	srand(unsigned int(time(0)));
 }
 
 void Node::Update()
@@ -291,6 +295,81 @@ void dae::Node::SetNodeAsDug()
 
 	CheckSideTextures();
 	UpdateOpenNeighbours();
+}
+
+Node * dae::Node::GetRandomOpenNeighbour(NodeSides side)
+{
+	int randomNumber = (rand() % (highChance + baseChance * 2 + lowChance));
+	Node* node;
+
+	if (randomNumber < highChance)
+	{
+		node = mOpenNeighbours[int(side)];
+		if (node == nullptr)
+		{
+			for (auto newNode : mOpenNeighbours)
+			{
+				if (newNode != nullptr)
+					return newNode;
+			}
+		}
+	}
+	else if (randomNumber < highChance + baseChance)
+	{
+		node = mOpenNeighbours[(int(side) + 1) % 4];
+		if (node == nullptr)
+		{
+			for (auto newNode : mOpenNeighbours)
+			{
+				if (newNode != nullptr)
+					return newNode;
+			}
+		}
+	}
+	else if (randomNumber < highChance + baseChance * 2)
+	{
+		node = mOpenNeighbours[(int(side) + 1) % 4];
+		if (node == nullptr)
+		{
+			for (auto newNode : mOpenNeighbours)
+			{
+				if (newNode != nullptr)
+					return newNode;
+			}
+		}
+	}
+	else
+	{
+		int index = int(side);
+		index -= 2;
+		if (index == -1) index = 3;
+		if (index == -2) index = 2;
+
+		node = mOpenNeighbours[int(side)];
+		if (node == nullptr)
+		{
+			for (auto newNode : mOpenNeighbours)
+			{
+				if (newNode != nullptr)
+					return newNode;
+			}
+		}
+	}
+
+	return node;
+}
+
+Direction dae::Node::GetDirection(Node * node)
+{
+	int i = 0;
+	for (auto testNode : mNeighbours)
+	{
+		if (testNode == node)
+			return Direction(i);
+		i++;
+	}
+
+	return Direction(i);
 }
 
 bool dae::Node::IsSideEntered(NodeSides side)
