@@ -459,3 +459,8 @@ Node* Node::GetOpenNeighbour(NodeSides side)
 {
 	return mOpenNeighbours[int(side)];
 }
+
+Node* Node::GetNeighbour(NodeSides side)
+{
+	return mNeighbours[int(side)];
+}

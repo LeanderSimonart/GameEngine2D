@@ -6,6 +6,7 @@
 #include "GameObject.h"
 #include "LevelLoader.h"
 #include "Node.h"
+#include "ProjectileComponent.h"
 
 #include <iostream>
 
@@ -25,7 +26,6 @@ void ActorComponent::Initialize()
 
 	renderComp = GetGameObject()->GetComponent<RenderComponent>();
 	transformComp = GetGameObject()->GetTransform();
-	//transformComp->SetPosition(0.0f, 0.0f);
 	renderComp->SetOffset(-7.5f, -7.5f);
 	renderComp->SetTexture("WhiteTile.jpg");
 
@@ -41,6 +41,9 @@ void ActorComponent::Initialize()
 void ActorComponent::Update()
 {
 	if (!mPlayerControlled)
+		return;
+
+	if (GetProjectileComponent() != nullptr && GetProjectileComponent()->IsActive())
 		return;
 
 	auto& input = InputManager::GetInstance();
@@ -241,6 +244,14 @@ void ActorComponent::Right()
 	CheckGrid(pos.x, pos.y, 15);
 }
 
+void dae::ActorComponent::Pump()
+{
+	if (GetProjectileComponent() != nullptr)
+	{
+		GetProjectileComponent()->Activate();
+	}
+}
+
 std::vector<Node*> ActorComponent::GetOpenNodes()
 {
 	return GetCurrentNode()->GetOpenNeighbours();
@@ -343,9 +354,7 @@ void ActorComponent::GetTargetPosition(int index)
 		{
 			if (GoToCenter(pos, currentObjectPos)) return;
 		}
-		else if (GoToCenter(pos, GetTargetPos())) return;
-			
-		
+		else if (GoToCenter(pos, GetTargetPos())) return;		
 		
 		//If we are at the center we can go to the next node.		
 		int currentIndex = level.GetIndex(currentObject);
@@ -361,8 +370,16 @@ void ActorComponent::GetTargetPosition(int index)
 		}
 		else newIndex = index;
 
+		//Fix index to not go to the top or bottom row;
+		newIndex = currentIndex + newIndex;
+		if (newIndex < 14)
+		{
+			newIndex = currentIndex;
+		}
+		else if (newIndex > 252 - 15) newIndex = currentIndex;
+
 		// Get the target.
-		auto targetObject = level.CheckGrid(currentIndex + newIndex);
+		auto targetObject = level.CheckGrid(newIndex);
 
 		if (targetObject != nullptr)
 		{
@@ -374,19 +391,7 @@ void ActorComponent::GetTargetPosition(int index)
 				pos.y += 22.5f;
 				SetTargetPos(pos);
 				return;
-			}
-
-			//for (auto target : currentObject->GetComponent<Node>()->GetOpenNeighbours())
-			//{
-			//	if (target == targetObject->GetComponent<Node>())
-			//	{
-			//		pos = targetObject->GetTransform()->GetPosition();
-			//		pos.x += 22;
-			//		pos.y += 22;
-			//		SetTargetPos(pos);
-			//		return;
-			//	}
-			//}			
+			}		
 		}		
 	}
 }

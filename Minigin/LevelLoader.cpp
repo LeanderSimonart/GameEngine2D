@@ -6,6 +6,7 @@
 #include "Display.h"
 #include "HealthComponent.h"
 #include "RockComponent.h"
+#include "ProjectileComponent.h"
 
 #include "Pooka.h"
 
@@ -227,6 +228,14 @@ void dae::LevelLoader::CreateDigDugChar(Scene & scene, int index)
 	scene.Add(lives);
 
 	mDigDugChars.push_back(actorComp);
+
+	//Pump
+	auto pump = std::make_shared<GameObject>();
+	pump->Initialize();
+	auto pumpComp = new ProjectileComponent(ProjectileType::PUMP,testChar);
+	pump->AddComponent(pumpComp);
+	pumpComp->Initialize();
+	scene.Add(pump);
 }
 
 void dae::LevelLoader::CreateRocks(Scene & scene)

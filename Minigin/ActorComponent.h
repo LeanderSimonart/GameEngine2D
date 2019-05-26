@@ -6,6 +6,7 @@ namespace dae
 {
 	class RenderComponent;
 	class Node;
+	class ProjectileComponent;
 
 	enum Direction
 	{
@@ -37,6 +38,7 @@ namespace dae
 		void Down();
 		void Left();
 		void Right();
+		void Pump();
 
 		void GetTargetPosition(int index);
 		void CheckGrid(float x, float y, float size);
@@ -52,6 +54,9 @@ namespace dae
 		virtual void SetCurrentNode(Node* node) { currentNode = node; }
 		virtual glm::vec3 GetTargetPos() { return targetPos; }
 		std::vector<Node*> GetOpenNodes();
+
+		virtual void SetProjectileComponent(ProjectileComponent* projectile) { projectileComp = projectile; }
+		virtual ProjectileComponent* GetProjectileComponent() { return projectileComp; }
 	private:
 		Type actorType = Type::DIGDUG;		
 		
@@ -61,6 +66,7 @@ namespace dae
 		TransformComponent* transformComp = nullptr;
 		RenderComponent* renderComp = nullptr;
 		Direction lookAtDirection = Direction::LOOKINGLEFT;
+		ProjectileComponent* projectileComp = nullptr;
 
 		Node* currentNode = nullptr;		
 

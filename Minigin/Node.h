@@ -43,6 +43,7 @@ namespace dae
 		std::vector<Node*> GetOpenNeighbours() { return mOpenNeighbours; }
 		void UpdateOpenNeighbours();
 		Node* GetOpenNeighbour(NodeSides side);
+		Node* GetNeighbour(NodeSides side);
 
 		std::vector<ActorComponent*> ReturnCurrentActors() { return actorCompVec; }
 

@@ -11,7 +11,8 @@ namespace dae
 		ButtonA,
 		ButtonB,
 		ButtonX,
-		ButtonY
+		ButtonY,
+		RightShoulder = 9
 	};
 
 	static const WORD Controller_Buttons[] =
@@ -43,6 +44,9 @@ namespace dae
 
 		void UpdateControllerConfiguration(ControllerButton button, int id);
 
+		bool LeftStickUsingX();
+		bool LeftStickUsingY();
+
 		void Destroy();
 
 	private:
@@ -59,5 +63,6 @@ namespace dae
 		Command* m_ButtonB;
 		Command* m_ButtonX;
 		Command* m_ButtonY;
+		Command* m_PumpCommand;
 	};
 }

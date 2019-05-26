@@ -27,6 +27,11 @@ namespace dae
 
 		void DisableCustomDimensions(bool off) { useCustomDimensions = !off; }
 
+		void RemoveTexture() { m_pTexture = nullptr; }
+
+		float ReturnTextureWidth() { return textureWidth; }
+		float ReturnTextureHeight() { return textureHeight; }
+
 		float xPos = 0;
 		float yPos = 0;
 	private:
