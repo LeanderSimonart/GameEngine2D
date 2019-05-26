@@ -98,7 +98,7 @@ std::shared_ptr<GameObject> LevelLoader::CheckGrid(float x, float y)
 
 int LevelLoader::GetIndex(std::shared_ptr<GameObject> object)
 {
-	for (int i = 0; i < NodeArray.size(); i++)
+	for (int i = 0; i < (int)NodeArray.size(); i++)
 	{
 		if (NodeArray[i] == object)
 			return i;
@@ -109,7 +109,7 @@ int LevelLoader::GetIndex(std::shared_ptr<GameObject> object)
 
 int LevelLoader::GetIndex(Node* node)
 {
-	for (int i = 0; i < NodeArray.size(); i++)
+	for (int i = 0; i < (int)NodeArray.size(); i++)
 	{
 		if (NodeArray[i]->GetComponent<Node>() == node)
 			return i;

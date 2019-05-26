@@ -105,7 +105,7 @@ void Node::CheckSideTextures()
 bool Node::CheckForAllOpenNeighbours()
 {
 	AllNeighboursOpen = true;
-	for (int i = 0; i < mNeighbours.size(); i++)
+	for (int i = 0; i < (int)mNeighbours.size(); i++)
 	{
 		if (mNeighbours[i] != mOpenNeighbours[i])
 		{
@@ -446,7 +446,7 @@ void dae::Node::UpdateOpenNeighbours()
 	if (AllNeighboursOpen)
 		return;
 
-	for (int i = 0; i < mNeighbours.size(); i++)
+	for (int i = 0; i < (int)mNeighbours.size(); i++)
 	{
 		if (mNeighbours[i] == nullptr) continue;
 		if (mOpenNeighbours[i] != nullptr) continue;
