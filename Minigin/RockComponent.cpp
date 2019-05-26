@@ -22,6 +22,7 @@ void RockComponent::Initialize()
 	int index = level.GetIndex(pos.x,pos.y);
 
 	mNodeToCheck = level.CheckGrid(index + 14)->GetComponent<Node>();
+	mPreviousNode = mNodeToCheck;
 }
 
 void RockComponent::Update()
@@ -52,6 +53,9 @@ void RockComponent::Update()
 
 		targetPos = mNodeToCheck->GetGameObject()->GetTransform()->GetPosition().y;
 		targetPos += 23;
+
+		if (mPreviousNode != nullptr) mPreviousNode->SideEntered(NodeSides::DOWN);
+		mNodeToCheck->SideEntered(NodeSides::TOP);
 	}
 	else if (!mNodeToCheck->Dug && mHasFallen)
 	{
@@ -71,6 +75,7 @@ void RockComponent::Update()
 		auto& level = LevelLoader::GetInstance();
 		int index = level.GetIndex(pos.x, pos.y);
 		index += 14;
+
 		mPreviousNode = mNodeToCheck;
 		mNodeToCheck = level.CheckGrid(index)->GetComponent<Node>();
 	}

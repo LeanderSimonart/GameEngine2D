@@ -258,18 +258,23 @@ void Node::SideEntered(NodeSides side)
 	switch (side)
 	{
 	case TOP:
+		topRenderComp->SetTexture("BlackTile.jpg");
 		TopEntered = true;
 		break;
 	case RIGHT:
+		rightRenderComp->SetTexture("BlackTile.jpg");
 		RightEntered = true;
 		break;
 	case DOWN:
+		bottomRenderComp->SetTexture("BlackTile.jpg");
 		BottomEntered = true;
 		break;
 	case LEFT:
+		leftRenderComp->SetTexture("BlackTile.jpg");
 		LeftEntered = true;
 		break;
 	case CENTER:
+		centerRenderComp->SetTexture("BlackTile.jpg");
 		CenterEntered = true;
 		break;
 	}
