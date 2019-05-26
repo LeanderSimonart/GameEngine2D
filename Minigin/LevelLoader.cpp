@@ -31,7 +31,9 @@ void LevelLoader::Load(const std::string& name, Scene& scene)
 
 	Parser();
 	LoadNodes(scene);
-	
+
+	// Make the displays
+	CreateDisplay(scene);	
 	// Open nodes
 	UpdateNodes();
 	// Place rocks
@@ -46,6 +48,25 @@ void LevelLoader::Load(const std::string& name, Scene& scene)
 		if (mAmountOfPlayers == 1)
 			break;
 		CreateDigDugChar(scene, mStartIndex2);
+	}
+}
+
+void dae::LevelLoader::SoftReset()
+{
+	for (auto digDug : mDigDugChars)
+	{
+		auto pos = CheckGrid(digDug->GetOrgIndex())->GetTransform()->GetPosition();
+		pos.x += 22.5f;
+		pos.y += 22.5f;
+		digDug->GetGameObject()->GetTransform()->SetPosition(pos.x, pos.y);
+	}
+
+	for (auto pooka : mPookaChars)
+	{
+		auto pos = CheckGrid(pooka->GetOrgIndex())->GetTransform()->GetPosition();
+		pos.x += 22.5f;
+		pos.y += 22.5f;
+		pooka->GetGameObject()->GetTransform()->SetPosition(pos.x, pos.y);
 	}
 }
 
@@ -87,6 +108,29 @@ int LevelLoader::GetIndex(float x, float y)
 
 	int index = xIndex + yIndex * Width;
 	return index;
+}
+
+int dae::LevelLoader::GetLayer(int yPos)
+{
+	if (yPos >= mBottomRows + mMiddleRows + mHighRows + mTopRows + mSkyRows)
+		return 4;
+	else if (yPos >= mBottomRows + mMiddleRows + mHighRows + mTopRows)
+		return 3;
+	else if (yPos >= mBottomRows + mMiddleRows + mHighRows)
+		return 2;
+	else if (yPos >= mBottomRows + mMiddleRows)
+		return 1;
+	else if (yPos >= mBottomRows)
+		return 0;
+	else return -1;
+}
+
+void dae::LevelLoader::DisablePooka(Pooka* actor)
+{
+	auto pooka = std::find(mPookaChars.begin(), mPookaChars.end(), actor);
+
+	if (pooka != mPookaChars.end())
+		mPookaChars.erase(pooka);
 }
 
 void LevelLoader::Parser()
@@ -182,6 +226,7 @@ void dae::LevelLoader::UpdateNodes()
 	for (std::shared_ptr<GameObject> node : NodeArray)
 	{
 		node->GetComponent<Node>()->SetNeighbours();
+		node->GetComponent<Node>()->AddObserver(mPointDisplay);
 	}
 
 	for (int index : mOpenNodes)
@@ -212,20 +257,15 @@ void dae::LevelLoader::CreateDigDugChar(Scene & scene, int index)
 	testChar->GetTransform()->SetPosition(pos.x, pos.y);
 
 	//Components
-	auto actorComp = new ActorComponent(Type::DIGDUG, true);
+	auto actorComp = new ActorComponent(Type::DIGDUG, true, index);
 	testChar->AddComponent(actorComp);
 	actorComp->Initialize();
-	auto healthComp = new HealthComponent(5);
+	auto healthComp = new HealthComponent(3,Type::DIGDUG);
 	testChar->AddComponent(healthComp);
+	healthComp->AddObserver(mHealthDisplay);
+	healthComp->AddObserver(mPointDisplay);
+	healthComp->Initialize();
 	scene.Add(testChar);
-
-	//Display
-	auto lives = std::make_shared<GameObject>();
-	lives->Initialize();
-	auto healthDisplay = new Display(10, 785, testChar, true);
-	lives->AddComponent(healthDisplay);
-	healthDisplay->Initialize();
-	scene.Add(lives);
 
 	mDigDugChars.push_back(actorComp);
 
@@ -256,6 +296,7 @@ void dae::LevelLoader::CreateRocks(Scene & scene)
 		auto rockComp = new RockComponent(scene);
 		rock->AddComponent(rockComp);
 		rockComp->Initialize();
+		rockComp->AddObserver(mPointDisplay);
 
 		scene.Add(rock);
 	}
@@ -274,16 +315,38 @@ void dae::LevelLoader::CreatePooka(Scene & scene)
 		auto pos = CheckGrid(index)->GetTransform()->GetPosition();
 		pos.x += 22.5f;
 		pos.y += 22.5f;
-		auto pooka = new Pooka(pos.x, pos.y);
+		auto pooka = new Pooka(pos.x, pos.y,index);
 		object->AddComponent(pooka);
 		pooka->Initialize();
 
-		auto healthComp = new HealthComponent(1);
+		auto healthComp = new HealthComponent(1,Type::POOKA);
 		object->AddComponent(healthComp);
+		healthComp->AddObserver(mPointDisplay);
 
 		scene.Add(object);
+
+		mPookaChars.push_back(pooka);
 	}
 
+}
+
+void dae::LevelLoader::CreateDisplay(Scene & scene)
+{
+	//Display Points
+	auto points = std::make_shared<GameObject>();
+	points->Initialize();
+	mPointDisplay = new Display(450, 10, false);
+	points->AddComponent(mPointDisplay);
+	mPointDisplay->Initialize();
+	scene.Add(points);
+
+	//Display Health
+	auto lives = std::make_shared<GameObject>();
+	lives->Initialize();
+	mHealthDisplay = new Display(10, 785, true);
+	lives->AddComponent(mHealthDisplay);
+	mHealthDisplay->Initialize();
+	scene.Add(lives);
 }
 
 int LevelLoader::HeightLevels(int currentHeight, int bottomRows, int middleRows,int highRows, int topRows, int skyRows)

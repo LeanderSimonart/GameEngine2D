@@ -8,7 +8,7 @@ namespace dae
 	class Pooka : public ActorComponent
 	{
 	public:
-		Pooka(float xPos, float yPos);
+		Pooka(float xPos, float yPos, int orgIndex) : xPosition(xPos), yPosition(yPos), mOrgIndex(orgIndex) {}
 		~Pooka();
 
 		virtual void Initialize();
@@ -29,6 +29,8 @@ namespace dae
 		glm::vec3 GetTargetPos() { return targetPos; }
 
 		void CheckForPlayers();
+
+		int GetOrgIndex() { return mOrgIndex; }
 	private:
 		void GetNewTarget(ActorComponent* actor);
 		void Move(glm::vec3 pookaPos);
@@ -65,5 +67,7 @@ namespace dae
 
 		std::pair<int, int> PlayerRC;
 		std::pair<float, float> PlayerPos;
+
+		int mOrgIndex = 0;
 	};
 }

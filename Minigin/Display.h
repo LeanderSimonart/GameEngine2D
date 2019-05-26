@@ -1,5 +1,7 @@
 #pragma once
 #include "BaseComponent.h"
+#include "Observer.h"
+
 namespace dae
 {
 	class RenderComponent;
@@ -8,28 +10,33 @@ namespace dae
 	class PointComponent;
 	class GameObject;
 
-	class Display : public BaseComponent
+	class Display : public BaseComponent, public Observer
 	{
 	public:
-		Display(float xPos, float yPos, std::shared_ptr<GameObject> linkedObject, bool isHealth) : xPosition(xPos), yPosition(yPos), mLinkedObject(linkedObject), mIsHealth(isHealth) {}
+		Display(float xPos, float yPos, bool isHealth) : xPosition(xPos), yPosition(yPos), mIsHealth(isHealth) {}
 		~Display();
 
 		virtual void Initialize();
 		virtual void Update();
 		virtual void Render();
 
+		virtual void OnNotify(const Subject& subject, Event event);
+
 	private:
+		void UpdateDisplayText();
+
 		float xPosition = 0;
 		float yPosition = 0;
 
 		RenderComponent* mRenderComp = nullptr;
-		HealthComponent* mHealthComp = nullptr;
 		TextComponent* mTextComp = nullptr;
-		PointComponent* mPointComp = nullptr;
-
-		std::weak_ptr<GameObject> mLinkedObject;
 
 		bool mIsHealth = false;
+
+		int mHealth = 0;
+		int mPoints = 0;
+
+		std::string mDisplayText;
 	};
 }
 

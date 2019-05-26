@@ -4,10 +4,10 @@ class Observer;
 
 enum Event
 {
-	FIRE = 0,
-	DUCK = 1,
-	FART = 2,
-	JUMP = 3
+	REMOVELIFE = 0,
+	ADDPOINTS = 1,
+	ADDLIFE = 2,
+	ADDPOINTSNODE = 3
 };
 
 class Subject

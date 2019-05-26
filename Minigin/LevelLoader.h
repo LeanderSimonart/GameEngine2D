@@ -6,11 +6,15 @@
 namespace dae
 {
 	class GameObject;
+	class Display;
+	class Pooka;
 
 	class LevelLoader : public Singleton<LevelLoader>
 	{
 	public:
 		void Load(const std::string& name, Scene& scene);
+		void SoftReset();
+
 		int GetIndex(std::shared_ptr<GameObject> object);
 		int GetIndex(Node* node);
 		int GetIndex(float x, float y);
@@ -21,6 +25,10 @@ namespace dae
 		int Width = 0;
 		int Height = 0;
 
+		int GetLayer(int yPos);
+
+		void DisablePooka(Pooka* actor);
+
 	private:
 		void Parser();
 		void LoadNodes(Scene& scene);
@@ -28,6 +36,7 @@ namespace dae
 		void CreateDigDugChar(Scene& scene, int index);
 		void CreateRocks(Scene& scene);
 		void CreatePooka(Scene& scene);
+		void CreateDisplay(Scene& scene);
 
 		std::vector<std::shared_ptr<GameObject>> NodeArray = std::vector<std::shared_ptr<GameObject>>();
 		int HeightLevels(int currentHeight, int bottomRows, int middleRows, int highRows, int topRows, int skyRows);
@@ -41,6 +50,10 @@ namespace dae
 		std::vector<int> mOpenNodes;
 
 		std::vector<ActorComponent*> mDigDugChars;
+		std::vector<Pooka*> mPookaChars;
+
+		Display* mHealthDisplay;
+		Display* mPointDisplay;
 
 		int mBottomRows = 0;
 		int mMiddleRows = 0;

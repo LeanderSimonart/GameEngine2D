@@ -182,44 +182,51 @@ void Node::UpdateNode(float x, float y, Type actorType)
 	float xPos = PositionX - x;
 	float yPos = PositionY - y;
 
+	bool update = true;
+
 	if (actorType == Type::DIGDUG)
 	{
-		if (xPos >= -SizeSides)
+		if (xPos >= -SizeSides && !LeftEntered)
 		{
 			leftRenderComp->SetTexture("BlackTile.jpg");
 
 			LeftEntered = true;
 		}
-		else if (xPos <= -(Size - SizeSides))
+		else if (xPos <= -(Size - SizeSides) && !RightEntered)
 		{
 			rightRenderComp->SetTexture("BlackTile.jpg");
 
 			RightEntered = true;
 		}
-		else if (yPos >= -SizeSides)
+		else if (yPos >= -SizeSides && !TopEntered)
 		{
 			topRenderComp->SetTexture("BlackTile.jpg");
 
 			TopEntered = true;
 		}
-		else if (yPos <= -(Size - SizeSides))
+		else if (yPos <= -(Size - SizeSides) && !BottomEntered)
 		{
 			bottomRenderComp->SetTexture("BlackTile.jpg");
 
 			BottomEntered = true;
 		}
-		else
+		else if (!CenterEntered)
 		{
+			Notify(*this, Event::ADDPOINTSNODE);
+
 			centerRenderComp->SetTextureDimension((Size - SizeSides*2), (Size - SizeSides * 2));
 			centerRenderComp->SetTexture("BlackTile.jpg");
 			CenterEntered = true;
 			Dug = true;
 		}
+		else update = false;
 
-		CheckSideTextures();
+		if (update)
+			CheckSideTextures();
 	}
 
-	UpdateOpenNeighbours();
+	if (update)
+		UpdateOpenNeighbours();
 }
 
 void Node::EnterNode(ActorComponent* actor, Node* previousNode)
@@ -255,31 +262,43 @@ void Node::ModifyActorVec(ActorComponent * actorComp, bool add)
 
 void Node::SideEntered(NodeSides side)
 {
+	bool updateSides = true;
 	switch (side)
 	{
 	case TOP:
-		topRenderComp->SetTexture("BlackTile.jpg");
+		if (!TopEntered)
+			topRenderComp->SetTexture("BlackTile.jpg");
+		else updateSides = false;
 		TopEntered = true;
 		break;
 	case RIGHT:
-		rightRenderComp->SetTexture("BlackTile.jpg");
+		if (!RightEntered)
+			rightRenderComp->SetTexture("BlackTile.jpg");
+		else updateSides = false;
 		RightEntered = true;
 		break;
 	case DOWN:
-		bottomRenderComp->SetTexture("BlackTile.jpg");
+		if (!BottomEntered)
+			bottomRenderComp->SetTexture("BlackTile.jpg");
+		else updateSides = false;
 		BottomEntered = true;
 		break;
 	case LEFT:
-		leftRenderComp->SetTexture("BlackTile.jpg");
+		if (!LeftEntered)
+			leftRenderComp->SetTexture("BlackTile.jpg");
+		else updateSides = false;
 		LeftEntered = true;
 		break;
 	case CENTER:
-		centerRenderComp->SetTexture("BlackTile.jpg");
+		if (!CenterEntered)
+			centerRenderComp->SetTexture("BlackTile.jpg");
+		else updateSides = false;
 		CenterEntered = true;
 		break;
 	}
 
-	CheckSideTextures();
+	if (updateSides)
+		CheckSideTextures();
 }
 
 void dae::Node::SetNodeAsDug()

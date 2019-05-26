@@ -65,6 +65,34 @@ Command * dae::InputManager::HandleInput() const
 {
 	Command* command = nullptr;
 
+	if (GetKeyState('W') & 0x8000)
+	{
+		command = CheckButtonId(dae::ControllerButton::ButtonY);
+		if (command != nullptr) return command;
+	}
+
+	if (GetKeyState('A') & 0x8000)
+	{
+		command = CheckButtonId(dae::ControllerButton::ButtonX);
+		if (command != nullptr) return command;
+	}
+	if (GetKeyState('S') & 0x8000)
+	{
+		command = CheckButtonId(dae::ControllerButton::ButtonA);
+		if (command != nullptr) return command;
+	}
+	if (GetKeyState('D') & 0x8000)
+	{
+		command = CheckButtonId(dae::ControllerButton::ButtonB);
+		if (command != nullptr) return command;
+	}
+	if (GetKeyState(VK_SPACE) & 0x8000)
+	{
+		command = CheckButtonId(dae::ControllerButton::RightShoulder);
+		if (command != nullptr) return command;
+	}
+
+
 	command = IsPressed(dae::ControllerButton::ButtonA);
 	if (command != nullptr) return command;
 

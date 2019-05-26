@@ -1,12 +1,15 @@
 #pragma once
 #include "BaseComponent.h"
+#include "Subject.h"
+#include "ActorComponent.h"
+#include "Node.h"
 
 namespace dae
 {
-	class HealthComponent : public BaseComponent
+	class HealthComponent : public BaseComponent, public Subject
 	{
 	public:
-		HealthComponent(int lives) : mMaxLives(lives), mCurrentLives(lives) {}
+		HealthComponent(int lives, Type type) : mMaxLives(lives), mCurrentLives(lives), mActorType(type) {}
 		~HealthComponent();
 
 		virtual void Initialize();
@@ -14,22 +17,20 @@ namespace dae
 		virtual void Render();
 
 		void UpdateLives(int amount);
-		void ResetLives() { mCurrentLives = mMaxLives; }
-		void UseDisplay(bool use) { mDisplay = use; }
+		void ResetLives();
 
 		int ReturnCurrentLives() { return mCurrentLives; }
 		int ReturnMaxLives() { return mMaxLives; }
-		bool ReturnUsingDisplay() { return mDisplay; }
 
-		std::string ReturnDisplayText();
-	private:
 		void Death();
+		void Death(NodeSides side);
+	private:
+		
 
 		int mCurrentLives = 0;
 		int mMaxLives = 0;
 		int mDeath = false;
-
-		bool mDisplay = false;
+		Type mActorType;
 	};
 }
 

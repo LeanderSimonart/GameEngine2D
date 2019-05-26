@@ -106,7 +106,7 @@ void dae::ProjectileComponent::LookingForActors(int index)
 		for (ActorComponent* actor : actorCompVec)
 		{
 			if (actor->GetType() != DIGDUG)
-				actor->GetGameObject()->GetComponent<HealthComponent>()->UpdateLives(-1);
+				actor->GetGameObject()->GetComponent<HealthComponent>()->Death((NodeSides)inverseIndex);
 		}
 
 		auto posNode = nodeToCheck->GetGameObject()->GetTransform()->GetPosition();
@@ -152,7 +152,7 @@ bool dae::ProjectileComponent::CheckSmallWalls(int index, int inverseIndex)
 		auto actorCompVec = nodeToCheck->ReturnCurrentActors();
 		for (ActorComponent* actor : actorCompVec)
 		{
-			actor->GetGameObject()->GetComponent<HealthComponent>()->UpdateLives(-1);
+			actor->GetGameObject()->GetComponent<HealthComponent>()->Death((NodeSides)inverseIndex);
 		}
 
 		auto pos = nodeToCheck->GetGameObject()->GetTransform()->GetPosition();

@@ -26,7 +26,7 @@ namespace dae
 	class ActorComponent :	public BaseComponent
 	{
 	public:
-		ActorComponent(Type type, bool playerControlled) : actorType(type), mPlayerControlled(playerControlled) {}
+		ActorComponent(Type type, bool playerControlled, int orgIndex) : actorType(type), mPlayerControlled(playerControlled), mOrgIndex(orgIndex) {}
 		ActorComponent();
 		virtual ~ActorComponent();
 
@@ -57,6 +57,8 @@ namespace dae
 
 		virtual void SetProjectileComponent(ProjectileComponent* projectile) { projectileComp = projectile; }
 		virtual ProjectileComponent* GetProjectileComponent() { return projectileComp; }
+
+		virtual int GetOrgIndex() { return mOrgIndex; }
 	private:
 		Type actorType = Type::DIGDUG;		
 		
@@ -73,6 +75,8 @@ namespace dae
 		bool targetSet = false;
 		bool mPlayerControlled = true;
 		glm::vec3 targetPos = { 0,0,0 };
+
+		int mOrgIndex = 0;
 	};
 }
 

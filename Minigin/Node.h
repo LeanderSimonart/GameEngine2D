@@ -1,6 +1,7 @@
 #pragma once
 #include "BaseComponent.h"
 #include "ActorComponent.h"
+#include "Subject.h"
 
 namespace dae
 {
@@ -16,7 +17,7 @@ namespace dae
 		CENTER
 	};
 
-	class Node : public BaseComponent
+	class Node : public BaseComponent, public Subject
 	{
 	public:
 		Node(int positionX, int positionY, int size, int level) : PositionX((float)positionX), PositionY((float)positionY), Size((float)size), Level(level) {}
@@ -46,6 +47,8 @@ namespace dae
 		Node* GetNeighbour(NodeSides side);
 
 		std::vector<ActorComponent*> ReturnCurrentActors() { return actorCompVec; }
+
+		int GetLevel() { return Level; }
 
 		bool Dug = false;
 	private:

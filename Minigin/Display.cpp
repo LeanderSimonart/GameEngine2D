@@ -21,14 +21,6 @@ void Display::Initialize()
 	auto object = GetGameObject();
 	auto transform = object->GetComponent<TransformComponent>();
 
-	//Health
-	if (auto linkedObject = mLinkedObject.lock())
-	{
-		if (mIsHealth)
-			mHealthComp = linkedObject->GetComponent<HealthComponent>();
-		else mPointComp = linkedObject->GetComponent<PointComponent>();
-	}
-
 	transform->SetPosition(xPosition, yPosition);
 
 	mRenderComp = new RenderComponent();
@@ -39,11 +31,8 @@ void Display::Initialize()
 
 	mRenderComp->Initialize();
 
-	//Health
-	if (mIsHealth)
-		mTextComp->Initialize(mHealthComp->ReturnDisplayText(), font);
-	else mTextComp->Initialize(mPointComp->ReturnDisplayText(), font);
-
+	UpdateDisplayText();
+	mTextComp->Initialize(mDisplayText,font);
 }
 
 void Display::Update()
@@ -53,8 +42,36 @@ void Display::Update()
 
 void Display::Render()
 {
-	//Health
+	mTextComp->SetText(mDisplayText);
+}
+
+void dae::Display::OnNotify(const Subject& subject, Event event)
+{
+	UNREFERENCED_PARAMETER(subject);
+
+	switch (event)
+	{
+	case REMOVELIFE:
+		mHealth -= 1;
+		break;
+	case ADDPOINTS:
+		mPoints += 100;
+		break;
+	case ADDLIFE:
+		mHealth += 1;
+		break;
+	case ADDPOINTSNODE:
+		mPoints += 10;
+	default:
+		break;
+	}
+
+	UpdateDisplayText();
+}
+
+void dae::Display::UpdateDisplayText()
+{
 	if (mIsHealth)
-		mTextComp->SetText(mHealthComp->ReturnDisplayText());
-	else mTextComp->SetText(mPointComp->ReturnDisplayText());
+		mDisplayText = "Lives : " + std::to_string(mHealth);
+	else mDisplayText = "Points : " + std::to_string(mPoints);
 }

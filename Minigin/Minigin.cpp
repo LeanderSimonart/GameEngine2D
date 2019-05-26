@@ -57,15 +57,6 @@ void dae::Minigin::LoadGame() const
 	auto& levelLoader = LevelLoader::GetInstance();
 	levelLoader.Load("../Data/Level1.txt", scene);
 
-	auto points = std::make_shared<GameObject>();
-	points->Initialize();
-	auto pointComp = new PointComponent();
-	points->AddComponent(pointComp);
-	auto pointDisplay = new Display(550, 10, points,false);
-	points->AddComponent(pointDisplay);
-	pointDisplay->Initialize();
-	scene.Add(points);
-
 	///Background
 	//auto background = std::make_shared<GameObject>();
 	//background->Initialize();

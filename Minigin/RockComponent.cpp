@@ -27,6 +27,9 @@ void RockComponent::Initialize()
 
 void RockComponent::Update()
 {
+	if (mIsDestroyed)
+		return;
+
 	if (mCanFall)
 	{
 		currentDelay += Time::GetInstance().DeltaTime;
@@ -49,7 +52,7 @@ void RockComponent::Update()
 	auto pos = GetGameObject()->GetTransform()->GetPosition();
 	if (mNodeToCheck->Dug && mHasFallen)
 	{
-		DamageActors();
+		if (DamageActors()) return;
 
 		targetPos = mNodeToCheck->GetGameObject()->GetTransform()->GetPosition().y;
 		targetPos += 23;
@@ -87,7 +90,15 @@ void RockComponent::Render()
 
 void RockComponent::Destroy()
 {
+	int points = AmountOfPoints();
+	points = points / 100;
+	for (int i = 0; i < points; i++)
+	{
+		Notify(*this, Event::ADDPOINTS);
+	}
+
 	GetGameObject()->RemoveAllComponents();
+	mIsDestroyed = true;
 }
 
 void RockComponent::CheckActors()
@@ -109,7 +120,7 @@ void RockComponent::CheckActors()
 	mCanFall = canFall;
 }
 
-void RockComponent::DamageActors()
+bool RockComponent::DamageActors()
 {
 	auto& level = LevelLoader::GetInstance();
 	auto pos = GetGameObject()->GetTransform()->GetPosition();
@@ -118,6 +129,44 @@ void RockComponent::DamageActors()
 	actorCompVec = currentNode->ReturnCurrentActors();
 	for (ActorComponent* actor : actorCompVec)
 	{
-		actor->GetGameObject()->GetComponent<HealthComponent>()->UpdateLives(-1);
+		if (actor->GetType() == Type::DIGDUG)
+		{
+			Destroy();
+			actor->GetGameObject()->GetComponent<HealthComponent>()->UpdateLives(-1);
+			return true;
+		}
+		else
+		{
+			amountOfKilledEnemies++;
+			actor->GetGameObject()->GetComponent<HealthComponent>()->Death();
+		}
+
+	}
+
+	return false;
+}
+
+int dae::RockComponent::AmountOfPoints()
+{
+	switch (amountOfKilledEnemies)
+	{
+	case 1:
+		return 1000;
+	case 2:
+		return 2500;
+	case 3:
+		return 4000;
+	case 4:
+		return 6000;
+	case 5:
+		return 8000;
+	case 6:
+		return 10000;
+	case 7:
+		return 12000;
+	case 8:
+		return 15000;
+	default:
+		return 0;
 	}
 }

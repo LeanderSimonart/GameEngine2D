@@ -6,12 +6,6 @@
 
 using namespace dae;
 
-dae::Pooka::Pooka(float xPos, float yPos)
-{
-	xPosition = xPos;
-	yPosition = yPos;
-}
-
 Pooka::~Pooka()
 {
 }
