@@ -20,6 +20,9 @@ namespace dae
 		Scene& operator=(const Scene& other) = delete;
 		Scene& operator=(Scene&& other) = delete;
 
+		void SetPreviousSceneIndex(int previousScene) { mPreviousScene = previousScene; }
+		int GetPreviousSceneIndex() { return mPreviousScene; }
+
 	private: 
 		explicit Scene(const std::string& name);
 
@@ -27,6 +30,8 @@ namespace dae
 		std::vector < std::shared_ptr<SceneObject>> mObjects{};
 
 		static unsigned int idCounter; 
+
+		int mPreviousScene = 0;
 	};
 
 }

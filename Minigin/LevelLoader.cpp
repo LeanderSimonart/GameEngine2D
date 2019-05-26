@@ -20,6 +20,8 @@ void LevelLoader::Load(const std::string& name, Scene& scene)
 	std::string data;
 	std::ifstream levelFile(name);
 
+	Reset();
+
 	if (levelFile.is_open())
 	{
 		while (std::getline(levelFile, data))
@@ -68,6 +70,21 @@ void dae::LevelLoader::SoftReset()
 		pos.y += 22.5f;
 		pooka->GetGameObject()->GetTransform()->SetPosition(pos.x, pos.y);
 	}
+}
+
+void dae::LevelLoader::Reset()
+{
+	dataVec.clear();
+
+	NodeArray.clear();
+
+	mPookaIndices.clear();
+	mFygarIndices.clear();
+	mRockIndices.clear();
+	mOpenNodes.clear();
+
+	mDigDugChars.clear();
+	mPookaChars.clear();
 }
 
 std::shared_ptr<GameObject> LevelLoader::CheckGrid(float x, float y)
@@ -131,6 +148,11 @@ void dae::LevelLoader::DisablePooka(Pooka* actor)
 
 	if (pooka != mPookaChars.end())
 		mPookaChars.erase(pooka);
+
+	if (mPookaChars.size() == 0)
+	{
+		SceneManager::GetInstance().NextLevel();
+	}
 }
 
 void LevelLoader::Parser()

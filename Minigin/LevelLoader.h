@@ -14,6 +14,7 @@ namespace dae
 	public:
 		void Load(const std::string& name, Scene& scene);
 		void SoftReset();
+		void Reset();
 
 		int GetIndex(std::shared_ptr<GameObject> object);
 		int GetIndex(Node* node);
@@ -36,13 +37,14 @@ namespace dae
 		void CreateDigDugChar(Scene& scene, int index);
 		void CreateRocks(Scene& scene);
 		void CreatePooka(Scene& scene);
-		void CreateDisplay(Scene& scene);
-
-		std::vector<std::shared_ptr<GameObject>> NodeArray = std::vector<std::shared_ptr<GameObject>>();
+		void CreateDisplay(Scene& scene);		
 		int HeightLevels(int currentHeight, int bottomRows, int middleRows, int highRows, int topRows, int skyRows);
 
 		int nodeSize = 45;
+
 		std::vector<int> dataVec;
+
+		std::vector<std::shared_ptr<GameObject>> NodeArray = std::vector<std::shared_ptr<GameObject>>();
 
 		std::vector<int> mPookaIndices;
 		std::vector<int> mFygarIndices;

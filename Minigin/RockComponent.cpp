@@ -41,7 +41,7 @@ void RockComponent::Update()
 			mHasFallen = true;
 			mCanFall = false;
 
-			DamageActors();
+			if (DamageActors()) return;
 		}
 		else return;
 	}

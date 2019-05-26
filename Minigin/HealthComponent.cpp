@@ -71,13 +71,16 @@ void HealthComponent::Death()
 	if (actor != nullptr)
 	{
 		LevelLoader::GetInstance().DisablePooka(actor);
+		actor->GetCurrentNode()->LeaveNode(actor);
+		GetGameObject()->RemoveAllComponents();
+		return;
 	}
 
-	if (actor == nullptr) GetGameObject()->GetComponent<ActorComponent>();
-	if (actor == nullptr) return;
-
-	actor->GetCurrentNode()->LeaveNode(actor);
-	GetGameObject()->RemoveAllComponents();
+	auto digdug = GetGameObject()->GetComponent<ActorComponent>();
+	if (digdug != nullptr)
+	{
+		SceneManager::GetInstance().SetActiveScene("GameOver");
+	}	
 }
 
 void dae::HealthComponent::Death(NodeSides side)
